@@ -54,44 +54,54 @@ export default function LogisticsConsumer() {
   }, []);
 
   const handleSearch = async () => {
-    setErrorMessage('');
-    if (!partNumber.trim()) {
-      setErrorMessage('Part Id is required');
-      return;
-    }
-    if (!prefix.trim()) {
-      const prefixes = getAvailablePrefixes(partNumber);
-      setErrorMessage(prefixes.length ? `Part Prefix : ${prefixes.join(' ')}` : 'Part Prefix not found for given Part Id');
-      return;
-    }
+  setErrorMessage('');
 
-    const consumers = await getMarketConsumers(partNumber, prefix);
-    setMarketOptions([{ id: '', label: '' }, ...consumers]);
+  if (!partNumber.trim()) {
+    setErrorMessage('Part Id is required');
+    return;
+  }
 
-    if (!pendingMarketConsumer.trim()) {
-      setErrorMessage('Select Market Consumer');
-      return;
-    }
+  // ✅ If prefix is empty OR key doesn't exist → show PART ID IS MISSING
+  const key = `${partNumber}|${prefix}`;
+  const consumers = await getMarketConsumers(partNumber, prefix);
 
-    // ✅ Extract name separately from Data
-    const selectedObj = consumers.find(c => c.label === pendingMarketConsumer);
-    const nameValue = selectedObj?.name || '';
+  if (!prefix.trim() || !consumers || consumers.length === 0) {
+    setErrorMessage('PART ID IS MISSING');
+    setMarketOptions([]);
+    setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
+    setTableData([]);
+    return;
+  }
 
-    const parts = pendingMarketConsumer.split(' - ');
-    setMarketConsumerDetails({
-      id: parts[0] || '',
-      productArea: parts[1] || '',
-      gda: parts[2] || '',
-      designation: parts[3] || '',
-      name: nameValue
-    });
+  // ✅ Populate dropdown options
+  setMarketOptions([{ id: '', label: '' }, ...consumers]);
 
-    const consumerId = parts[0];
-    const data = await getLogisticsData(partNumber, prefix, consumerId);
-    setSelectedCheckboxes([]);
-    setSelectedRadio(null);
-    setTableData(data);
-  };
+  if (!pendingMarketConsumer.trim()) {
+    setErrorMessage('Select Market Consumer');
+    return;
+  }
+
+  // ✅ Extract name
+  const selectedObj = consumers.find(c => c.label === pendingMarketConsumer);
+  const nameValue = selectedObj?.name || '';
+
+  const parts = pendingMarketConsumer.split(' - ');
+  setMarketConsumerDetails({
+    id: parts[0] || '',
+    productArea: parts[1] || '',
+    gda: parts[2] || '',
+    designation: parts[3] || '',
+    name: nameValue
+  });
+
+  // ✅ Load table data
+  const consumerId = parts[0];
+  const data = await getLogisticsData(partNumber, prefix, consumerId);
+  setSelectedCheckboxes([]);
+  setSelectedRadio(null);
+  setTableData(data);
+};
+
 
   const handleMarketConsumerClick = (label) => {
     setSelectedMarketConsumer(label);
@@ -164,7 +174,7 @@ export default function LogisticsConsumer() {
     <div className="background">
       <div className="center-content">
         <div className="form-container" style={{ justifyContent: 'space-between' }}>
-          <button className="button-primary">Home</button>
+          <Link to="/"><button className="button-primary">Home</button></Link>
           <p className="title">MDM Logistics Consumer</p>
           <button className="button-primary">User Manual</button>
         </div>
