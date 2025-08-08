@@ -19,7 +19,6 @@ const logisticsDatabase = {
       ],
       '4173': [
          { id: '1000000001', designation: 'DC Gent', city: 'GE', auto: 'Y', resp: 'R117XX', date: '20250714' },
-        { id: '1000000002', designation: 'DC Incheon', city: 'IN', auto: 'N', resp: '', date: '' },
         { id: '1000000024', designation: 'DC Sydney', city: 'SY', auto: '', resp: '', date: '' },
         { id: '1000000030', designation: 'DC Byhalia', city: 'BY', auto: '', resp: '', date: '' },
         { id: '1000000037', designation: 'DC Mexico', city: 'ME', auto: '', resp: '', date: '' },
@@ -30,8 +29,8 @@ const logisticsDatabase = {
 
   '100|VOP': {
     marketConsumers: [
-      { id: '1618', label: '1618 - PENTA - EU - GENT' },
-      { id: '4125', label: '4125 - PENTA - NA - BYHALIA' }
+      { id: '1618', label: '1618 - PENTA - EU - GENT' , name:'DUMMY'},
+      { id: '4125', label: '4125 - PENTA - NA - BYHALIA', name:'DUMMY' }
     ],
     data: {
       '1618': [

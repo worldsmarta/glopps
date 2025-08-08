@@ -5,6 +5,10 @@ import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Da
 import { Link } from 'react-router';
 
 export default function LogisticsConsumer() {
+  useEffect(() => {
+    document.title = "MDM Logistics Consumer";
+  }, []);
+
   const [partNumber, setPartNumber] = useState('');
   const [prefix, setPrefix] = useState('');
   const [marketOptions, setMarketOptions] = useState([]);
@@ -25,13 +29,24 @@ export default function LogisticsConsumer() {
   const [isGotoDropdownOpen, setIsGotoDropdownOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+
   const partInputRef = useRef(null);
+  const nameRef = useRef(null);
+  const designationRef = useRef(null);
+  const [isNameTruncated, setIsNameTruncated] = useState(false);
+  const [isDesignationTruncated, setIsDesignationTruncated] = useState(false);
+  const [sortMessage, setSortMessage] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+
+
 
   useEffect(() => {
     if (partInputRef.current) partInputRef.current.focus();
   }, []);
 
   useEffect(() => {
+    // Reset state when partNumber or prefix changes
     setSelectedMarketConsumer('');
     setPendingMarketConsumer('');
     setMarketOptions([]);
@@ -53,55 +68,91 @@ export default function LogisticsConsumer() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // ✅ Detect text overflow for tooltip dynamically
+  useEffect(() => {
+    if (nameRef.current) {
+      setIsNameTruncated(nameRef.current.scrollWidth > nameRef.current.clientWidth);
+    }
+    if (designationRef.current) {
+      setIsDesignationTruncated(designationRef.current.scrollWidth > designationRef.current.clientWidth);
+    }
+  }, [marketConsumerDetails]);
+
+  // ✅ Handle Search
   const handleSearch = async () => {
-  setErrorMessage('');
+    setErrorMessage('');
 
-  if (!partNumber.trim()) {
-    setErrorMessage('Part Id is required');
-    return;
-  }
+    if (!partNumber.trim()) {
+      setErrorMessage('Part Id is required');
+      return;
+    }
 
-  // ✅ If prefix is empty OR key doesn't exist → show PART ID IS MISSING
-  const key = `${partNumber}|${prefix}`;
-  const consumers = await getMarketConsumers(partNumber, prefix);
+    // Get all prefixes for entered part number
+    const availablePrefixes = getAvailablePrefixes(partNumber);
 
-  if (!prefix.trim() || !consumers || consumers.length === 0) {
-    setErrorMessage('PART ID IS MISSING');
+    if (availablePrefixes.length === 0) {
+      setErrorMessage('PART ID IS MISSING');
+      clearTableAndOptions();
+      return;
+    }
+
+    // Auto-fill prefix if only one exists
+    let currentPrefix = prefix.trim();
+    if (!currentPrefix && availablePrefixes.length === 1) {
+      currentPrefix = availablePrefixes[0];
+      setPrefix(currentPrefix);
+    }
+
+    // Show available prefixes if user didn't enter prefix
+    if (!currentPrefix) {
+      setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
+      clearTableAndOptions();
+      return;
+    }
+
+    // Fetch market consumers
+    const consumers = await getMarketConsumers(partNumber, currentPrefix);
+    if (!consumers || consumers.length === 0) {
+      setErrorMessage('PART ID IS MISSING');
+      clearTableAndOptions();
+      return;
+    }
+
+    // Populate dropdown
+    setMarketOptions([{ id: '', label: '' }, ...consumers]);
+
+    // If no market consumer is selected yet → show message
+    if (!pendingMarketConsumer.trim()) {
+      setErrorMessage('Select Market Consumer');
+      return;
+    }
+
+    // Extract consumer details
+    const selectedObj = consumers.find(c => c.label === pendingMarketConsumer);
+    const nameValue = selectedObj?.name || '';
+    const parts = pendingMarketConsumer.split(' - ');
+
+    setMarketConsumerDetails({
+      id: parts[0] || '',
+      productArea: parts[1] || '',
+      gda: parts[2] || '',
+      designation: parts[3] || '',
+      name: nameValue
+    });
+
+    // Fetch logistics table data
+    const consumerId = parts[0];
+    const data = await getLogisticsData(partNumber, currentPrefix, consumerId);
+    setSelectedCheckboxes([]);
+    setSelectedRadio(null);
+    setTableData(data);
+  };
+
+  const clearTableAndOptions = () => {
     setMarketOptions([]);
     setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
     setTableData([]);
-    return;
-  }
-
-  // ✅ Populate dropdown options
-  setMarketOptions([{ id: '', label: '' }, ...consumers]);
-
-  if (!pendingMarketConsumer.trim()) {
-    setErrorMessage('Select Market Consumer');
-    return;
-  }
-
-  // ✅ Extract name
-  const selectedObj = consumers.find(c => c.label === pendingMarketConsumer);
-  const nameValue = selectedObj?.name || '';
-
-  const parts = pendingMarketConsumer.split(' - ');
-  setMarketConsumerDetails({
-    id: parts[0] || '',
-    productArea: parts[1] || '',
-    gda: parts[2] || '',
-    designation: parts[3] || '',
-    name: nameValue
-  });
-
-  // ✅ Load table data
-  const consumerId = parts[0];
-  const data = await getLogisticsData(partNumber, prefix, consumerId);
-  setSelectedCheckboxes([]);
-  setSelectedRadio(null);
-  setTableData(data);
-};
-
+  };
 
   const handleMarketConsumerClick = (label) => {
     setSelectedMarketConsumer(label);
@@ -124,12 +175,26 @@ export default function LogisticsConsumer() {
   };
 
   const handleAddConsumer = () => {
-    const updated = tableData.map(row =>
-      selectedCheckboxes.includes(row.id) ? { ...row, auto: 'N' } : row
-    );
+    const today = new Date();
+    const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, ''); // 'YYYYMMDD'
+    const userId = 'A510468';
+
+    const updated = tableData.map(row => {
+      if (selectedCheckboxes.includes(row.id)) {
+        return {
+          ...row,
+          auto: 'N',
+          resp: userId,
+          date: formattedDate
+        };
+      }
+      return row;
+    });
+
     setTableData(updated);
     setSelectedCheckboxes([]);
   };
+
 
   const handleDeleteClick = () => {
     if (selectedRadio) {
@@ -156,11 +221,9 @@ export default function LogisticsConsumer() {
   const handleClear = () => {
     setPartNumber('');
     setPrefix('');
-    setMarketOptions([]);
+    clearTableAndOptions();
     setSelectedMarketConsumer('');
     setPendingMarketConsumer('');
-    setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
-    setTableData([]);
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setErrorMessage('');
@@ -170,18 +233,39 @@ export default function LogisticsConsumer() {
   const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio);
   const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';
 
+  const handleSort = (field, label) => {
+    const compareAsc = (a, b) => {
+      const valA = (a[field] || '').toString().toLowerCase();
+      const valB = (b[field] || '').toString().toLowerCase();
+      return valA.localeCompare(valB);
+    };
+
+    const existingSorted = [...tableData.filter(row => row.auto === 'Y' || row.auto === 'N')].sort(compareAsc);
+    const toAddSorted = [...tableData.filter(row => row.auto === '')].sort(compareAsc);
+
+    setTableData([...existingSorted, ...toAddSorted]);
+  };
+
   return (
     <div className="background">
       <div className="center-content">
+        {/* Header */}
         <div className="form-container" style={{ justifyContent: 'space-between' }}>
           <Link to="/"><button className="button-primary">Home</button></Link>
           <p className="title">MDM Logistics Consumer</p>
           <button className="button-primary">User Manual</button>
         </div>
 
+        {/* Error Banner */}
         <div className="error-banner form-container">
-          {errorMessage ? errorMessage : <span className="error-placeholder">.</span>}
+          {errorMessage
+            ? errorMessage
+            : sortMessage
+              ? <span style={{ color: 'black', fontWeight: 'bold' }}>{sortMessage}</span>
+              : <span className="error-placeholder">.</span>
+          }
         </div>
+
 
         {/* Input Fields */}
         <div className="form-container">
@@ -207,68 +291,44 @@ export default function LogisticsConsumer() {
           </div>
         </div>
 
-       
+        {/* Market Consumer Info */}
+        <div className="form-container" style={{
+          fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row',
+          marginTop: '10px', marginBottom: '10px', alignItems: 'center', justifyContent: 'flex-start'
+        }}>
+          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
+          <p ref={nameRef} style={{
+            flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px',
+            fontWeight: '500', height: '34px', lineHeight: '34px', overflow: 'hidden',
+            textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+          }} title={isNameTruncated ? marketConsumerDetails.name : ''}>
+            {marketConsumerDetails.name || '\u00A0'}
+          </p>
 
-{/* ✅ Response Fields (Aligned & Stable) */}
-<div className="form-container" style={{
-  fontSize: '14px',
-  fontWeight: 'bold',
-  display: 'flex',
-  flexDirection: 'row',
-  marginTop: '10px',
-  marginBottom: '10px',
-  alignItems: 'center',
-  justifyContent: 'flex-start'
-}}>
-  <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
-  <p style={{
-    flex: '1 1 200px',
-    maxWidth: '300px',
-    marginLeft: '5px',
-    marginRight: '10px',
-    fontWeight: '500',
-    height: '34px',
-    lineHeight: '34px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  }} title={marketConsumerDetails.name}>
-    {marketConsumerDetails.name || '\u00A0'}
-  </p>
+          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Market Consumer ID:</p>
+          <p style={{ width: '40px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}>
+            {marketConsumerDetails.id}
+          </p>
 
-  <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Market Consumer ID:</p>
-  <p style={{ width: '40px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}>
-    {marketConsumerDetails.id}
-  </p>
+          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Product Area:</p>
+          <p style={{ width: '60px', flexShrink: 0, marginLeft: '5px', marginRight: '20px', fontWeight: '500', lineHeight: '34px' }}>
+            {marketConsumerDetails.productArea}
+          </p>
 
-  {/* ✅ Product Area moved before GDA */}
-  <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Product Area:</p>
-  <p style={{ width: '60px', flexShrink: 0, marginLeft: '5px', marginRight: '20px', fontWeight: '500', lineHeight: '34px' }}>
-    {marketConsumerDetails.productArea}
-  </p>
+          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>GDA:</p>
+          <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}>
+            {marketConsumerDetails.gda}
+          </p>
 
-  <p style={{ margin: 0, whiteSpace: 'nowrap' }}>GDA:</p>
-  <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}>
-    {marketConsumerDetails.gda}
-  </p>
-
-  <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
-  <p style={{
-    flex: '1 1 100px',
-    maxWidth: '100px',
-    marginLeft: '5px',
-    marginRight: '10px',
-    fontWeight: '500',
-    height: '34px',
-    lineHeight: '34px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  }} title={marketConsumerDetails.designation}>
-    {marketConsumerDetails.designation || '\u00A0'}
-  </p>
-</div>
-
+          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
+          <p ref={designationRef} style={{
+            flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px',
+            fontWeight: '500', height: '34px', lineHeight: '34px', overflow: 'hidden',
+            textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+          }} title={isDesignationTruncated ? marketConsumerDetails.designation : ''}>
+            {marketConsumerDetails.designation || '\u00A0'}
+          </p>
+        </div>
 
         {/* Action Buttons */}
         <div className="form-container" style={{ justifyContent: 'space-between', marginTop: '20px' }}>
@@ -291,14 +351,42 @@ export default function LogisticsConsumer() {
           <button className="button-primary" onClick={handleClear}>Clear</button>
         </div>
 
-        {/* Table Component */}
+        {/* Table */}
         <LogisticsConsumerTable
           data={tableData}
           selectedCheckboxes={selectedCheckboxes}
           selectedRadio={selectedRadio}
           onCheckboxChange={handleCheckboxSelection}
           onRadioChange={handleRadioSelection}
+          onSort={(field, label) => {
+            const isSameField = sortField === field;
+            const newDirection = isSameField && sortDirection === 'asc' ? 'desc' : 'asc';
+
+            setSortField(field);
+            setSortDirection(newDirection);
+
+            const sorted = [...tableData];
+            const existing = sorted.filter(row => row.auto === 'Y' || row.auto === 'N');
+            const toAdd = sorted.filter(row => row.auto === '');
+
+            const compare = (a, b) => {
+              const aVal = a[field] ?? '';
+              const bVal = b[field] ?? '';
+              if (aVal < bVal) return newDirection === 'asc' ? -1 : 1;
+              if (aVal > bVal) return newDirection === 'asc' ? 1 : -1;
+              return 0;
+            };
+
+            const sortedExisting = [...existing].sort(compare);
+            const sortedToAdd = [...toAdd].sort(compare);
+
+            setTableData([...sortedExisting, ...sortedToAdd]);
+            setSortMessage(`Sort By: ${label} in ${newDirection === 'asc' ? 'Ascending' : 'Descending'} Order`);
+          }}
+
         />
+
+
 
         {/* Delete Modal */}
         {showDeleteDialog && (

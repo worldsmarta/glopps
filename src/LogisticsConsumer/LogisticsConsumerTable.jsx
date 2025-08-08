@@ -1,33 +1,49 @@
 import "./LogisticsConsumerTable.css";
+import { useState } from "react";
 
-export default function LogisticsConsumerTable({ data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange }) {
-  const existing = data.filter(row => row.auto === 'Y' || row.auto === 'N');
-  const toAdd = data.filter(row => row.auto === '');
+export default function LogisticsConsumerTable({ data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange, onSort }) {
+  const [sortField, setSortField] = useState(null);
 
   const handleCheckboxChange = (id) => {
     const updated = selectedCheckboxes.includes(id)
       ? selectedCheckboxes.filter(item => item !== id)
       : [...selectedCheckboxes, id];
-    onCheckboxChange(updated); // clears radio in parent
+    onCheckboxChange(updated);
   };
+
+  const handleSort = (field, label) => {
+    setSortField(label);
+    onSort(field, label);
+  };
+
+  const renderSortableHeader = (field, label) => (
+    <th
+      onClick={() => handleSort(field, label)}
+      title={`Sort by: ${label}`}
+      style={{ cursor: 'pointer',  position: 'relative' }}
+    >
+      {label}
+    </th>
+  );
 
   return (
     <div style={{ marginTop: '20px' }}>
+      
       <table className="modern-table">
         <thead>
           <tr>
             <th></th>
-            <th>Logistics Consumer ID:</th>
-            <th>Designation:</th>
-            <th>City Code:</th>
-            <th>Auto Flag:</th>
-            <th>Resp. Change:</th>
-            <th>Change Date:</th>
+            {renderSortableHeader('id', 'Logistics Consumer ID')}
+            {renderSortableHeader('designation', 'Designation')}
+            {renderSortableHeader('city', 'City Code')}
+            {renderSortableHeader('auto', 'Auto Flag')}
+            {renderSortableHeader('resp', 'Resp. Change')}
+            {renderSortableHeader('date', 'Change Date')}
           </tr>
         </thead>
         <tbody>
-          {/* Existing Consumers */}
-          {existing.map(row => (
+          {/* Existing */}
+          {data.filter(row => row.auto === 'Y' || row.auto === 'N').map(row => (
             <tr key={row.id}>
               <td className="center">
                 <input
@@ -41,20 +57,19 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
               <td>{row.designation}</td>
               <td>{row.city}</td>
               <td>{row.auto}</td>
-              <td>{row.resp}</td>
+              <td style={{ textDecoration:'underline',color:'#1e4f91',cursor:'pointer' }}>{row.resp}</td>
               <td>{row.date}</td>
             </tr>
           ))}
 
-          {/* Label */}
-          {toAdd.length > 0 && (
+          {/* To Add */}
+          {data.some(row => row.auto === '') && (
             <tr className="section-label">
-              <td colSpan="7">Logistics Consumers to add:</td>
+              <td colSpan="7" style={{fontWeight:'bold'}}>Logistics Consumers to add:</td>
             </tr>
           )}
 
-          {/* Consumers to Add */}
-          {toAdd.map(row => (
+          {data.filter(row => row.auto === '').map(row => (
             <tr key={row.id}>
               <td className="center">
                 <input
