@@ -38,6 +38,9 @@ export default function LogisticsConsumer() {
   const [sortMessage, setSortMessage] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+  const [userDialogOpen, setUserDialogOpen] = useState(false);
+  const [selectedUserInfo, setSelectedUserInfo] = useState(null);
+
 
 
 
@@ -91,7 +94,7 @@ export default function LogisticsConsumer() {
     const availablePrefixes = getAvailablePrefixes(partNumber);
 
     if (availablePrefixes.length === 0) {
-      setErrorMessage('PART ID IS MISSING');
+      setErrorMessage('PART ID MISSING IN GLOPPS');
       clearTableAndOptions();
       return;
     }
@@ -162,6 +165,9 @@ export default function LogisticsConsumer() {
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setTableData([]);
+    setSortField(null);       // Reset sort field
+    setSortMessage('');       // ✅ Reset sort message also
+
   };
 
   const handleCheckboxSelection = (selected) => {
@@ -193,6 +199,7 @@ export default function LogisticsConsumer() {
 
     setTableData(updated);
     setSelectedCheckboxes([]);
+    setSortMessage('UPDATE DONE');
   };
 
 
@@ -211,7 +218,9 @@ export default function LogisticsConsumer() {
     setSelectedRadio(null);
     setShowDeleteDialog(false);
     setDeleteTarget(null);
+    setSortMessage('UPDATE DONE');
   };
+
 
   const cancelDelete = () => {
     setShowDeleteDialog(false);
@@ -227,6 +236,9 @@ export default function LogisticsConsumer() {
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setErrorMessage('');
+    setSortField('');
+    setSortMessage('');
+
     if (partInputRef.current) partInputRef.current.focus();
   };
 
@@ -234,17 +246,61 @@ export default function LogisticsConsumer() {
   const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';
 
   const handleSort = (field, label) => {
-    const compareAsc = (a, b) => {
-      const valA = (a[field] || '').toString().toLowerCase();
-      const valB = (b[field] || '').toString().toLowerCase();
-      return valA.localeCompare(valB);
+    const isSameField = sortField === field;
+    const newDirection = isSameField && sortDirection === 'asc' ? 'desc' : 'asc';
+
+    setSortField(field);
+    setSortDirection(newDirection);
+
+    const sorted = [...tableData];
+    const existing = sorted.filter(row => row.auto === 'Y' || row.auto === 'N');
+    const toAdd = sorted.filter(row => row.auto === '');
+
+    const compare = (a, b) => {
+      const aVal = a[field] ?? '';
+      const bVal = b[field] ?? '';
+      if (aVal < bVal) return newDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return newDirection === 'asc' ? 1 : -1;
+      return 0;
     };
 
-    const existingSorted = [...tableData.filter(row => row.auto === 'Y' || row.auto === 'N')].sort(compareAsc);
-    const toAddSorted = [...tableData.filter(row => row.auto === '')].sort(compareAsc);
+    const sortedExisting = [...existing].sort(compare);
+    const sortedToAdd = [...toAdd].sort(compare);
 
-    setTableData([...existingSorted, ...toAddSorted]);
+    setTableData([...sortedExisting, ...sortedToAdd]);
+    setSortMessage(`Sort By: ${label} in ${newDirection === 'asc' ? 'Ascending' : 'Descending'} Order`);
   };
+
+  const getUserDetails = (userId) => {
+    if (userId === 'A510468') {
+      return {
+        id: 'A510468',
+        name: 'SMARTA DEY',
+        company: 'VOLVO GROUP INDIA PRIVATE LTD',
+        office: '',
+        department: '',
+        telephone: '',
+        email: 'smarta.dey@volvo.com'
+      };
+    } else {
+      return {
+        id: userId,
+        name: '',
+        company: '',
+        office: '',
+        department: '',
+        telephone: '',
+        email: ''
+      };
+    }
+  };
+
+  const handleUserClick = (userId) => {
+    const userInfo = getUserDetails(userId);
+    setSelectedUserInfo(userInfo);
+    setUserDialogOpen(true);
+  };
+
 
   return (
     <div className="background">
@@ -358,33 +414,13 @@ export default function LogisticsConsumer() {
           selectedRadio={selectedRadio}
           onCheckboxChange={handleCheckboxSelection}
           onRadioChange={handleRadioSelection}
-          onSort={(field, label) => {
-            const isSameField = sortField === field;
-            const newDirection = isSameField && sortDirection === 'asc' ? 'desc' : 'asc';
-
-            setSortField(field);
-            setSortDirection(newDirection);
-
-            const sorted = [...tableData];
-            const existing = sorted.filter(row => row.auto === 'Y' || row.auto === 'N');
-            const toAdd = sorted.filter(row => row.auto === '');
-
-            const compare = (a, b) => {
-              const aVal = a[field] ?? '';
-              const bVal = b[field] ?? '';
-              if (aVal < bVal) return newDirection === 'asc' ? -1 : 1;
-              if (aVal > bVal) return newDirection === 'asc' ? 1 : -1;
-              return 0;
-            };
-
-            const sortedExisting = [...existing].sort(compare);
-            const sortedToAdd = [...toAdd].sort(compare);
-
-            setTableData([...sortedExisting, ...sortedToAdd]);
-            setSortMessage(`Sort By: ${label} in ${newDirection === 'asc' ? 'Ascending' : 'Descending'} Order`);
-          }}
-
+          onSort={handleSort}
+          onUserClick={handleUserClick}
+          sortField={sortField}
+          setSortField={setSortField}
         />
+
+
 
 
 
@@ -400,6 +436,26 @@ export default function LogisticsConsumer() {
             </div>
           </div>
         )}
+
+        {/* user id info box */}
+        {userDialogOpen && selectedUserInfo && (
+          <div className="modal-overlay">
+            <div className="modal-box2" style={{ fontWeight: 'normal' }}>
+              <p style={{ textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}><strong>User ID Information</strong></p>
+              <p style={{ fontWeight: 'normal' }}><strong>User Id:</strong> {selectedUserInfo.id}</p>
+              <p><strong>User Name:</strong> {selectedUserInfo.name}</p>
+              <p><strong>Company:</strong> {selectedUserInfo.company}</p>
+              <p><strong>Office:</strong> {selectedUserInfo.office}</p>
+              <p><strong>Department:</strong> {selectedUserInfo.department}</p>
+              <p><strong>Telephone:</strong> {selectedUserInfo.telephone}</p>
+              <p><strong>Email:</strong> {selectedUserInfo.email}</p>
+              <div className="modal-actions">
+                <button className="button-primary" onClick={() => setUserDialogOpen(false)}>Close</button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

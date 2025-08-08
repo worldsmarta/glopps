@@ -1,9 +1,16 @@
 import "./LogisticsConsumerTable.css";
-import { useState } from "react";
 
-export default function LogisticsConsumerTable({ data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange, onSort }) {
-  const [sortField, setSortField] = useState(null);
-
+export default function LogisticsConsumerTable({
+  data,
+  selectedCheckboxes,
+  selectedRadio,
+  onCheckboxChange,
+  onRadioChange,
+  onSort,
+  onUserClick,
+  sortField,
+  setSortField
+}) {
   const handleCheckboxChange = (id) => {
     const updated = selectedCheckboxes.includes(id)
       ? selectedCheckboxes.filter(item => item !== id)
@@ -12,7 +19,7 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
   };
 
   const handleSort = (field, label) => {
-    setSortField(label);
+    setSortField(label);  // ✅ update parent state
     onSort(field, label);
   };
 
@@ -20,7 +27,7 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
     <th
       onClick={() => handleSort(field, label)}
       title={`Sort by: ${label}`}
-      style={{ cursor: 'pointer',  position: 'relative' }}
+      style={{ cursor: 'pointer', position: 'relative' }}
     >
       {label}
     </th>
@@ -28,7 +35,6 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
 
   return (
     <div style={{ marginTop: '20px' }}>
-      
       <table className="modern-table">
         <thead>
           <tr>
@@ -57,7 +63,12 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
               <td>{row.designation}</td>
               <td>{row.city}</td>
               <td>{row.auto}</td>
-              <td style={{ textDecoration:'underline',color:'#1e4f91',cursor:'pointer' }}>{row.resp}</td>
+              <td
+                style={{ textDecoration:'underline', cursor: 'pointer', color:'#1e4f91' }}
+                onClick={() => row.resp && onUserClick(row.resp)}
+              >
+                {row.resp}
+              </td>
               <td>{row.date}</td>
             </tr>
           ))}
@@ -65,7 +76,7 @@ export default function LogisticsConsumerTable({ data, selectedCheckboxes, selec
           {/* To Add */}
           {data.some(row => row.auto === '') && (
             <tr className="section-label">
-              <td colSpan="7" style={{fontWeight:'bold'}}>Logistics Consumers to add:</td>
+              <td colSpan="7" style={{ fontWeight: 'bold' }}>Logistics Consumers to add:</td>
             </tr>
           )}
 
