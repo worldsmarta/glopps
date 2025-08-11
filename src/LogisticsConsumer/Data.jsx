@@ -1,3 +1,5 @@
+
+
 const logisticsDatabase = {
   '100|VO': {
     marketConsumers: [
@@ -71,7 +73,6 @@ const logisticsDatabase = {
   }
 };
 
-/* ✅ Existing functions */
 export function getMarketConsumers(partNumber, prefix) {
   const key = `${partNumber}|${prefix}`;
   return new Promise((resolve) => {
@@ -88,7 +89,7 @@ export function getLogisticsData(partNumber, prefix, marketConsumer) {
   });
 }
 
-/* ✅ New helper to fetch available prefixes for a given part number */
+
 export function getAvailablePrefixes(partNumber) {
   const prefixes = Object.keys(logisticsDatabase)
     .filter(key => key.startsWith(`${partNumber}|`))

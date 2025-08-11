@@ -1,25 +1,16 @@
 import "./LogisticsConsumerTable.css";
 
 export default function LogisticsConsumerTable({
-  data,
-  selectedCheckboxes,
-  selectedRadio,
-  onCheckboxChange,
-  onRadioChange,
-  onSort,
-  onUserClick,
-  sortField,
-  setSortField
-}) {
+  data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange, onSort, onUserClick, setSortField }) {
+
+  //checks if checkbox is selected or not
   const handleCheckboxChange = (id) => {
-    const updated = selectedCheckboxes.includes(id)
-      ? selectedCheckboxes.filter(item => item !== id)
-      : [...selectedCheckboxes, id];
+    const updated = selectedCheckboxes.includes(id) ? selectedCheckboxes.filter(item => item !== id) : [...selectedCheckboxes, id];
     onCheckboxChange(updated);
   };
 
   const handleSort = (field, label) => {
-    setSortField(label);  // ✅ update parent state
+    setSortField(label);
     onSort(field, label);
   };
 
@@ -64,7 +55,7 @@ export default function LogisticsConsumerTable({
               <td>{row.city}</td>
               <td>{row.auto}</td>
               <td
-                style={{ textDecoration:'underline', cursor: 'pointer', color:'#1e4f91' }}
+                style={{ textDecoration: 'underline', cursor: 'pointer', color: '#1e4f91' }}
                 onClick={() => row.resp && onUserClick(row.resp)}
               >
                 {row.resp}

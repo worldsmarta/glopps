@@ -5,6 +5,8 @@ import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Da
 import { Link } from 'react-router';
 
 export default function LogisticsConsumer() {
+
+  //To make the tab name show "MDM Logistics Consumer" when you open this page.
   useEffect(() => {
     document.title = "MDM Logistics Consumer";
   }, []);
@@ -13,7 +15,7 @@ export default function LogisticsConsumer() {
   const [prefix, setPrefix] = useState('');
   const [marketOptions, setMarketOptions] = useState([]);
   const [selectedMarketConsumer, setSelectedMarketConsumer] = useState('');
-  const [pendingMarketConsumer, setPendingMarketConsumer] = useState('');
+
   const [marketConsumerDetails, setMarketConsumerDetails] = useState({
     id: '',
     gda: '',
@@ -41,17 +43,14 @@ export default function LogisticsConsumer() {
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState(null);
 
-
-
-
+  //the cursor is already in the Part Id box when the page opens — the user can start typing immediately.
   useEffect(() => {
     if (partInputRef.current) partInputRef.current.focus();
   }, []);
 
   useEffect(() => {
-    // Reset state when partNumber or prefix changes
+    // Reset state when partNumber or prefix changes([partNumber,prefix] is dependency array)
     setSelectedMarketConsumer('');
-    setPendingMarketConsumer('');
     setMarketOptions([]);
     setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
     setTableData([]);
@@ -60,18 +59,25 @@ export default function LogisticsConsumer() {
     setErrorMessage('');
   }, [partNumber, prefix]);
 
+
+  //If the user clicks anywhere outside the Market Consumer dropdown or the Go To menu, those menus should close.
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.custom-dropdown') && !event.target.closest('.goto-dropdown')) {
+      // !event.target.closest('.custom-dropdown') means:The click was not inside Market Consumer dropdown.Same logic for .goto-dropdown.
+      if (!event.target.closest('.custom-dropdown') || !event.target.closest('.goto-dropdown')) {
+        // console.log("custom-dropdown",event.target.closest('.custom-dropdown'))
+        // console.log("goto-dropdown",event.target.closest('.goto-dropdown'))
+
         setIsMarketDropdownOpen(false);
         setIsGotoDropdownOpen(false);
       }
     };
+    //Every time there’s a click anywhere in the page, run handleClickOutside
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // ✅ Detect text overflow for tooltip dynamically
+
+  // Detect text overflow for tooltip dynamically(for name and designation response fields)
   useEffect(() => {
     if (nameRef.current) {
       setIsNameTruncated(nameRef.current.scrollWidth > nameRef.current.clientWidth);
@@ -81,59 +87,72 @@ export default function LogisticsConsumer() {
     }
   }, [marketConsumerDetails]);
 
-  // ✅ Handle Search
+  //search
   const handleSearch = async () => {
+    //We start fresh every search — no old errors should show.
     setErrorMessage('');
 
+    //If partNumber is empty or only spaces and we click Search, show error and return.
     if (!partNumber.trim()) {
       setErrorMessage('Part Id is required');
       return;
     }
 
-    // Get all prefixes for entered part number
+
+    //Prefix Handling
+    // Get all prefixes for entered part number (if we enter partno. and click on search then this will get all the prefixes corresponding to the part number)
     const availablePrefixes = getAvailablePrefixes(partNumber);
 
+    //if the partNumber does not exist then there will be no corresponding prefix for that
     if (availablePrefixes.length === 0) {
       setErrorMessage('PART ID MISSING IN GLOPPS');
       clearTableAndOptions();
       return;
     }
 
-    // Auto-fill prefix if only one exists
-    let currentPrefix = prefix.trim();
+    // Auto-fill prefix if only one prefix exists (if for partNumber only one prefix exists and the user has not typed in prefix and hit search 
+    // then auto fill of prefix will be done)
+    let currentPrefix = prefix.trim(); //currentPrefix will have "" if no prefix entered in the input field
+    //!currentPrefix will br true when currentPrefix is "" and the length of availablePrefix for the partNo is checked if its 1 then we get that one availablePrefix and 
+    // set the value to setPrefix
     if (!currentPrefix && availablePrefixes.length === 1) {
-      currentPrefix = availablePrefixes[0];
-      setPrefix(currentPrefix);
+      currentPrefix = availablePrefixes[0]; //availablePrefixes is an array that is why [0] to get the value and store in currentPrefix
+      setPrefix(currentPrefix);//set the prefix value
     }
-
-    // Show available prefixes if user didn't enter prefix
+    // Show available prefixes if user didn't enter prefix and there is more than one availablePrefixes(length>1)
     if (!currentPrefix) {
       setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
-      clearTableAndOptions();
+      // clearTableAndOptions();
       return;
     }
 
-    // Fetch market consumers
+
+    // Fetch market consumers using the partNumber and currentPrefix
     const consumers = await getMarketConsumers(partNumber, currentPrefix);
+
+    //no market consumer exists
     if (!consumers || consumers.length === 0) {
-      setErrorMessage('PART ID IS MISSING');
-      clearTableAndOptions();
+      setErrorMessage('PART ID MISSING IN GLOPPS');
+      // clearTableAndOptions();
       return;
     }
 
-    // Populate dropdown
+    // Populate dropdown (if market consumers exist)
     setMarketOptions([{ id: '', label: '' }, ...consumers]);
+    //here {id:'',label:''} is used to add blank space in dropdown and ...consumers is used to add the rest of the market consumers in the dropdown
 
-    // If no market consumer is selected yet → show message
-    if (!pendingMarketConsumer.trim()) {
-      setErrorMessage('Select Market Consumer');
+    // If no market consumer is selected yet then show message(trim is used to avoid leading and trailing whitespaces)
+    if (!selectedMarketConsumer.trim()) {
+      setErrorMessage('Select MARKET CONSUMER');
       return;
     }
+
 
     // Extract consumer details
-    const selectedObj = consumers.find(c => c.label === pendingMarketConsumer);
-    const nameValue = selectedObj?.name || '';
-    const parts = pendingMarketConsumer.split(' - ');
+    const selectedObj = consumers.find(c => c.label === selectedMarketConsumer);
+    //here we find the object in consumers whose label exactly matches the currently selectedMarketConsumer.
+    const nameValue = selectedObj?.name || ''; //name field of the selected market consumer
+    const parts = selectedMarketConsumer.split(' - '); 
 
     setMarketConsumerDetails({
       id: parts[0] || '',
@@ -151,40 +170,44 @@ export default function LogisticsConsumer() {
     setTableData(data);
   };
 
+  //clearing all the data in the screen
   const clearTableAndOptions = () => {
     setMarketOptions([]);
     setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
     setTableData([]);
   };
 
+  //when we select an option for marketconsumer dropdown 
   const handleMarketConsumerClick = (label) => {
     setSelectedMarketConsumer(label);
-    setPendingMarketConsumer(label);
     setIsMarketDropdownOpen(false);
     setErrorMessage('');
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setTableData([]);
-    setSortField(null);       // Reset sort field
-    setSortMessage('');       // ✅ Reset sort message also
+    setSortField(null);       
+    setSortMessage('');   
 
   };
 
+  //handles the checkbox selection (here we ensure that when we select the checkbox or checkboxes then if any radio button was selected previously it is unselected)
   const handleCheckboxSelection = (selected) => {
     setSelectedCheckboxes(selected);
-    setSelectedRadio(null);
+    setSelectedRadio(null); //radio is unselected
   };
 
+  //handles the radio selection (here we ensure that when we select the radio button then if any checkboxes was selected previously it is unselected)
   const handleRadioSelection = (id) => {
     setSelectedRadio(id);
-    setSelectedCheckboxes([]);
+    setSelectedCheckboxes([]); //checkboxes is unselected
   };
 
+  //when we select the checkbox/checkboxes and we click on Add Consumer button , the rows(consumers) have autoflag set to N,date is today date
+  //  for now resp value is A510468 for all consumers added
   const handleAddConsumer = () => {
     const today = new Date();
     const formattedDate = today.toISOString().slice(0, 10).replace(/-/g, ''); // 'YYYYMMDD'
     const userId = 'A510468';
-
     const updated = tableData.map(row => {
       if (selectedCheckboxes.includes(row.id)) {
         return {
@@ -202,37 +225,38 @@ export default function LogisticsConsumer() {
     setSortMessage('UPDATE DONE');
   };
 
-
+//when we click on delete button
   const handleDeleteClick = () => {
     if (selectedRadio) {
-      setDeleteTarget(selectedRadio);
-      setShowDeleteDialog(true);
+      setDeleteTarget(selectedRadio); //sets the ID which row the user wants to delete
+      setShowDeleteDialog(true); //shows dialog box
     }
   };
 
+  //to handle when we click OK on the delete dialog box
   const confirmDelete = () => {
-    const updated = tableData.map(row =>
-      row.id === deleteTarget ? { ...row, auto: '' } : row
-    );
-    setTableData(updated);
-    setSelectedRadio(null);
-    setShowDeleteDialog(false);
-    setDeleteTarget(null);
-    setSortMessage('UPDATE DONE');
-  };
+    //the deleted row moves to row with checkboxes and autoflag,resp,date is set to empty
+  const updated = tableData.map(row =>row.id === deleteTarget? { ...row, auto: '', resp: '', date: '' }  : row);
+  setTableData(updated);
+  setSelectedRadio(null);
+  setShowDeleteDialog(false);
+  setDeleteTarget(null);
+  setSortMessage('UPDATE DONE');
+};
 
-
+  //to handle when we click Cancel on the delete dialog box
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setDeleteTarget(null);
   };
 
+
+  //when we click clear button
   const handleClear = () => {
     setPartNumber('');
     setPrefix('');
     clearTableAndOptions();
     setSelectedMarketConsumer('');
-    setPendingMarketConsumer('');
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setErrorMessage('');
@@ -242,9 +266,14 @@ export default function LogisticsConsumer() {
     if (partInputRef.current) partInputRef.current.focus();
   };
 
-  const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio);
-  const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';
+  //when the delete button will be enabled
+  //Searches through tableData Finds the row object where the id matches the selected radio’s ID (selectedRadio) Returns that full row object (selectedRadioConsumer)
+  const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio); 
+  const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';//then check if autoflag is N for that selected row with radio button (if yes then delete button enable)
 
+
+
+  //this handles the sort based on columns
   const handleSort = (field, label) => {
     const isSameField = sortField === field;
     const newDirection = isSameField && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -416,13 +445,8 @@ export default function LogisticsConsumer() {
           onRadioChange={handleRadioSelection}
           onSort={handleSort}
           onUserClick={handleUserClick}
-          sortField={sortField}
           setSortField={setSortField}
         />
-
-
-
-
 
         {/* Delete Modal */}
         {showDeleteDialog && (
