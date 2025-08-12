@@ -159,7 +159,7 @@ export default function LogisticsConsumer() {
       // clearTableAndOptions();
       return;
     }
-    
+
 
     // Populate dropdown (if market consumers exist)
     setMarketOptions([{ id: '', label: '' }, ...consumers]);
@@ -194,7 +194,7 @@ export default function LogisticsConsumer() {
     setSelectedRadio(null);
     setTableData(data);
 
-   
+
   };
 
   //clearing all the data in the screen
@@ -289,6 +289,7 @@ export default function LogisticsConsumer() {
     setErrorMessage('');
     setSortField('');
     setSortMessage('');
+    setIsGotoEnabled(false);
 
     if (partInputRef.current) partInputRef.current.focus();
   };
@@ -384,7 +385,13 @@ export default function LogisticsConsumer() {
     setUserDialogOpen(true);
   };
 
-
+  //helps to perform the same functions by pressing enter key which we can do by clicking on Search button
+  const handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
   return (
     // form-container class is very important
@@ -412,15 +419,16 @@ export default function LogisticsConsumer() {
         {/* Input Fields */}
         <div className="form-container">
           <div className="form-row">
+            {/* part id */}
             <label className="input-label">Part Id:</label>
             <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
-              onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => handleTabNavigation(e, "partId")} />
+              onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, "partId"); handleEnterKey(e) }} />
 
             <input type="text" className="input-field" style={{ width: '50px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-              ref={prefixRef} onKeyDown={(e) => handleTabNavigation(e, "prefix")} />
+              ref={prefixRef} onKeyDown={(e) => { handleTabNavigation(e, "prefix"); handleEnterKey(e) }} />
 
 
-
+            {/* market consumer dropdown */}
             <label className="input-label">Market Consumer:</label>
             {/* Always has "custom-dropdown".Adds "active" only if isMarketDropdownOpen is true. */}
 
@@ -430,14 +438,26 @@ export default function LogisticsConsumer() {
             the DOM (Document Object Model) tree. when i removed the e.stoppropagation() just to see what is its use i saw that when i enter 100 VO and click on search 
             when i click on market consumer dropdown it does not show  */}
 
-            <div
-              className={`custom-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
-              onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }}
-              ref={marketConsumerRef}
-              onKeyDown={(e) => handleTabNavigation(e, "marketConsumer")}
-              tabIndex={0} // ✅ Make it focusable
-            >
-              <div className="selected">{selectedMarketConsumer || ' '}<span className="dropdown-arrow">▼</span></div>
+            {/* if setIsGotoDropdownOpen(false ) is removed then if goto is open and we click on the marketconsumer dropdown then then the goto dropdown will 
+          still remain open and show on top of market consumer dropdown */}
+
+            {/* tabindex{0} is to make market consumer focusable */}
+
+            <div className={`custom-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
+              onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }} ref={marketConsumerRef}
+              onKeyDown={(e) => { handleTabNavigation(e, "marketConsumer"); handleEnterKey(e) }} tabIndex={0} >
+              {/* selectedmarketconsumer value we get from handleMarketConsumerClick function */}
+              <div className="selected">{selectedMarketConsumer}<span className="dropdown-arrow">▼</span></div>
+
+              {/* isMarketDropdownOpen && marketOptions.length > 0 && ( ... )The dropdown list <ul> is shown only if the dropdown is open and 
+              there are market options available.Inside the <ul className="dropdown-options">, it maps over marketOptions to render each option as a <li>.
+
+              Each <li> has an onClick handler which:Calls e.stopPropagation() again to prevent the click from bubbling.
+              if e.stopPropagation() removed then on clicking the option from dropdown the dropdown does not close
+
+              Calls handleMarketConsumerClick(opt.label) — this will update the selected market consumer and close the dropdown.
+              The option text is rendered as opt.label or a non-breaking space ('\u00A0') if empty, to keep layout consistent. */}
+
               {isMarketDropdownOpen && marketOptions.length > 0 && (
                 <ul className="dropdown-options">
                   {marketOptions.map((opt, i) => (
@@ -451,7 +471,7 @@ export default function LogisticsConsumer() {
           </div>
         </div>
 
-        {/* Market Consumer Info */}
+        {/* Response fields */}
         <div className="form-container" style={{
           fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row',
           marginTop: '10px', marginBottom: '10px', alignItems: 'center', justifyContent: 'flex-start'

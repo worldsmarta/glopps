@@ -62,3 +62,5 @@ First condition !currentPrefix is falseResult: Auto-fill does not run, because y
 
 
 -> added tab key navigation as well
+
+-> enter key can also be used 
