@@ -59,3 +59,6 @@ Data says: availablePrefixes = ["CH"]
 Since:
 currentPrefix = "CH" not empty
 First condition !currentPrefix is falseResult: Auto-fill does not run, because you already typed the prefix.
+
+
+-> added tab key navigation as well

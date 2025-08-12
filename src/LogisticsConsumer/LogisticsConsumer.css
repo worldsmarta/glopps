@@ -177,6 +177,14 @@
   pointer-events: none;
 }
 
+.custom-dropdown:focus {
+  border-color: #1e4f91;
+  box-shadow: 0 0 5px rgba(30, 79, 145, 0.3);
+  outline: none; /* remove default browser outline */
+}
+
+
+
 
 /* ✅ Error Banner with Fixed Height */
 .error-banner {

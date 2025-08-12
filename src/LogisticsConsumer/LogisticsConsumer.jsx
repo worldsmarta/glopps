@@ -35,6 +35,9 @@ export default function LogisticsConsumer() {
   const partInputRef = useRef(null);
   const nameRef = useRef(null);
   const designationRef = useRef(null);
+  const partIdRef = useRef(null);
+  const prefixRef = useRef(null);
+  const marketConsumerRef = useRef(null);
   const [isNameTruncated, setIsNameTruncated] = useState(false);
   const [isDesignationTruncated, setIsDesignationTruncated] = useState(false);
   const [sortMessage, setSortMessage] = useState('');
@@ -42,6 +45,8 @@ export default function LogisticsConsumer() {
   const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState(null);
+  const [isGotoEnabled, setIsGotoEnabled] = useState(false);
+
 
   //the cursor is already in the Part Id box when the page opens — the user can start typing immediately.
   useEffect(() => {
@@ -87,11 +92,29 @@ export default function LogisticsConsumer() {
     }
   }, [marketConsumerDetails]);
 
+  // TAB navigation handler
+  const handleTabNavigation = (e, current) => {
+    if (e.key === "Tab" && !e.shiftKey) {
+      e.preventDefault();
+      if (current === "partId") {
+        prefixRef.current?.focus();
+      } else if (current === "prefix") {
+        marketConsumerRef.current?.focus();
+      } else if (current === "marketConsumer") {
+        partIdRef.current?.focus(); // Loop back to Part ID
+      }
+    }
+  };
+
   //search
   const handleSearch = async () => {
     //We start fresh every search — no old errors should show.
     setErrorMessage('');
-
+    setIsGotoEnabled(true);
+    // Focus the first Part Id box(Part number) after search
+    if (partInputRef.current) {
+      partInputRef.current.focus();
+    }
     //If partNumber is empty or only spaces and we click Search, show error and return.
     if (!partNumber.trim()) {
       setErrorMessage('Part Id is required');
@@ -136,6 +159,7 @@ export default function LogisticsConsumer() {
       // clearTableAndOptions();
       return;
     }
+    
 
     // Populate dropdown (if market consumers exist)
     setMarketOptions([{ id: '', label: '' }, ...consumers]);
@@ -152,7 +176,7 @@ export default function LogisticsConsumer() {
     const selectedObj = consumers.find(c => c.label === selectedMarketConsumer);
     //here we find the object in consumers whose label exactly matches the currently selectedMarketConsumer.
     const nameValue = selectedObj?.name || ''; //name field of the selected market consumer
-    const parts = selectedMarketConsumer.split(' - '); 
+    const parts = selectedMarketConsumer.split(' - ');
 
     setMarketConsumerDetails({
       id: parts[0] || '',
@@ -162,12 +186,15 @@ export default function LogisticsConsumer() {
       name: nameValue
     });
 
+    // setIsGotoEnabled(true);
     // Fetch logistics table data
     const consumerId = parts[0];
     const data = await getLogisticsData(partNumber, currentPrefix, consumerId);
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setTableData(data);
+
+   
   };
 
   //clearing all the data in the screen
@@ -185,8 +212,8 @@ export default function LogisticsConsumer() {
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setTableData([]);
-    setSortField(null);       
-    setSortMessage('');   
+    setSortField(null);
+    setSortMessage('');
 
   };
 
@@ -225,7 +252,7 @@ export default function LogisticsConsumer() {
     setSortMessage('UPDATE DONE');
   };
 
-//when we click on delete button
+  //when we click on delete button
   const handleDeleteClick = () => {
     if (selectedRadio) {
       setDeleteTarget(selectedRadio); //sets the ID which row the user wants to delete
@@ -236,13 +263,13 @@ export default function LogisticsConsumer() {
   //to handle when we click OK on the delete dialog box
   const confirmDelete = () => {
     //the deleted row moves to row with checkboxes and autoflag,resp,date is set to empty
-  const updated = tableData.map(row =>row.id === deleteTarget? { ...row, auto: '', resp: '', date: '' }  : row);
-  setTableData(updated);
-  setSelectedRadio(null);
-  setShowDeleteDialog(false);
-  setDeleteTarget(null);
-  setSortMessage('UPDATE DONE');
-};
+    const updated = tableData.map(row => row.id === deleteTarget ? { ...row, auto: '', resp: '', date: '' } : row);
+    setTableData(updated);
+    setSelectedRadio(null);
+    setShowDeleteDialog(false);
+    setDeleteTarget(null);
+    setSortMessage('UPDATE DONE');
+  };
 
   //to handle when we click Cancel on the delete dialog box
   const cancelDelete = () => {
@@ -268,38 +295,64 @@ export default function LogisticsConsumer() {
 
   //when the delete button will be enabled
   //Searches through tableData Finds the row object where the id matches the selected radio’s ID (selectedRadio) Returns that full row object (selectedRadioConsumer)
-  const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio); 
+  const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio);
   const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';//then check if autoflag is N for that selected row with radio button (if yes then delete button enable)
 
 
 
   //this handles the sort based on columns
   const handleSort = (field, label) => {
-    const isSameField = sortField === field;
+    const isSameField = sortField === field;   // Check if we're sorting by the same column again
     const newDirection = isSameField && sortDirection === 'asc' ? 'desc' : 'asc';
+    // Toggle sort direction: if same column and currently ascending, switch to descending; otherwise ascending
 
-    setSortField(field);
-    setSortDirection(newDirection);
+    setSortField(field);          // Update the current sort field
+    setSortDirection(newDirection);  // Update the sort direction
 
-    const sorted = [...tableData];
-    const existing = sorted.filter(row => row.auto === 'Y' || row.auto === 'N');
-    const toAdd = sorted.filter(row => row.auto === '');
+    // const sorted = [...tableData];  // Make a copy of the table data so we don't mutate the original directly
 
+    // Separate rows into two groups:
+    // - 'existing' rows where autoflag is 'Y' or 'N'
+    // - 'to add' rows where autoflag is empty string ''
+    //const existing = sorted.filter(row => row.auto === 'Y' || row.auto === 'N');
+    //const toAdd = sorted.filter(row => row.auto === '');
+    const existing = tableData.filter(row => row.auto === 'Y' || row.auto === 'N');
+    const toAdd = tableData.filter(row => row.auto === '');
+
+    // Comparison function to sort by the specified field and direction(ascending or descending)
     const compare = (a, b) => {
-      const aVal = a[field] ?? '';
+      // Get the value of the selected field from the first row (a).If it's null or undefined, replace it with an empty string.
+      const aVal = a[field] ?? '';//If a[field] is null or undefined, use '' (empty string). Otherwise, use the actual value of a[field].
+
+      // Get the value of the selected field from the second row (b).If it's null or undefined, replace it with an empty string.
       const bVal = b[field] ?? '';
-      if (aVal < bVal) return newDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return newDirection === 'asc' ? 1 : -1;
+
+      // If aVal comes before bVal in alphabetical/numeric order
+      if (aVal < bVal)
+        // If sorting ascending, a should come first (-1). If sorting descending, a should come after b (1).
+        return newDirection === 'asc' ? -1 : 1;
+
+      // If aVal comes after bVal in alphabetical/numeric order
+      if (aVal > bVal)
+        // If sorting ascending, a should come after b (1). If sorting descending, a should come first (-1).
+        return newDirection === 'asc' ? 1 : -1;
+
+      // If values are exactly equal, keep their current order (0).
       return 0;
     };
-
+    // Sort each group independently
     const sortedExisting = [...existing].sort(compare);
-    const sortedToAdd = [...toAdd].sort(compare);
+    const sortedToAdd = [...toAdd].sort(compare); //Logistics Consumer to Add rows
 
+    // Combine the sorted groups back together with existing rows first
     setTableData([...sortedExisting, ...sortedToAdd]);
+
+    // Show a message about the current sort status
     setSortMessage(`Sort By: ${label} in ${newDirection === 'asc' ? 'Ascending' : 'Descending'} Order`);
   };
 
+
+  //for now this data is shown in User ID information box
   const getUserDetails = (userId) => {
     if (userId === 'A510468') {
       return {
@@ -324,6 +377,7 @@ export default function LogisticsConsumer() {
     }
   };
 
+  //this function handles when a user clicks on user id in resp column
   const handleUserClick = (userId) => {
     const userInfo = getUserDetails(userId);
     setSelectedUserInfo(userInfo);
@@ -331,9 +385,12 @@ export default function LogisticsConsumer() {
   };
 
 
+
   return (
+    // form-container class is very important
     <div className="background">
       <div className="center-content">
+
         {/* Header */}
         <div className="form-container" style={{ justifyContent: 'space-between' }}>
           <Link to="/"><button className="button-primary">Home</button></Link>
@@ -343,11 +400,11 @@ export default function LogisticsConsumer() {
 
         {/* Error Banner */}
         <div className="error-banner form-container">
-          {errorMessage
-            ? errorMessage
-            : sortMessage
-              ? <span style={{ color: 'black', fontWeight: 'bold' }}>{sortMessage}</span>
-              : <span className="error-placeholder">.</span>
+          {/* If errorMessage is true (a non-empty string, not null/undefined/false):Show the errorMessage.
+          Else, if sortMessage is true:Show it inside a <span> with black bold text.
+          Else (both are false):Show <span className="error-placeholder">.</span> — probably a placeholder so the space stays consistent even if there’s no message. */}
+          {errorMessage ? errorMessage : sortMessage ? <span style={{ color: 'black', fontWeight: 'bold' }}>{sortMessage}</span> :
+            <span className="error-placeholder">.</span>
           }
         </div>
 
@@ -356,12 +413,30 @@ export default function LogisticsConsumer() {
         <div className="form-container">
           <div className="form-row">
             <label className="input-label">Part Id:</label>
-            <input type="text" className="input-field" ref={partInputRef} value={partNumber} onChange={(e) => setPartNumber(e.target.value)} />
-            <input type="text" className="input-field" style={{ width: '50px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value)} />
+            <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
+              onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => handleTabNavigation(e, "partId")} />
+
+            <input type="text" className="input-field" style={{ width: '50px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+              ref={prefixRef} onKeyDown={(e) => handleTabNavigation(e, "prefix")} />
+
+
 
             <label className="input-label">Market Consumer:</label>
-            <div className={`custom-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
-              onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }}>
+            {/* Always has "custom-dropdown".Adds "active" only if isMarketDropdownOpen is true. */}
+
+            {/* setIsMarketDropdownOpen(prev => !prev); used to open and close the dropdown */}
+
+            {/* e.stopPropagation(): e.stopPropagation() (where e represents an Event object) is a method used to prevent the further propagation of an event through 
+            the DOM (Document Object Model) tree. when i removed the e.stoppropagation() just to see what is its use i saw that when i enter 100 VO and click on search 
+            when i click on market consumer dropdown it does not show  */}
+
+            <div
+              className={`custom-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
+              onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }}
+              ref={marketConsumerRef}
+              onKeyDown={(e) => handleTabNavigation(e, "marketConsumer")}
+              tabIndex={0} // ✅ Make it focusable
+            >
               <div className="selected">{selectedMarketConsumer || ' '}<span className="dropdown-arrow">▼</span></div>
               {isMarketDropdownOpen && marketOptions.length > 0 && (
                 <ul className="dropdown-options">
@@ -423,15 +498,35 @@ export default function LogisticsConsumer() {
             <button className="button-primary" disabled={!isDeleteEnabled} onClick={handleDeleteClick}>Delete</button>
           </div>
 
-          <div className={`goto-dropdown ${isGotoDropdownOpen ? 'active' : ''}`} onClick={(e) => { e.stopPropagation(); setIsGotoDropdownOpen(prev => !prev); setIsMarketDropdownOpen(false); }}>
-            <div className="goto-button"><span>Go To</span><span className="goto-arrow">▼</span></div>
+          <div
+            className={`goto-dropdown ${isGotoDropdownOpen ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsGotoDropdownOpen(prev => !prev);
+              setIsMarketDropdownOpen(false);
+            }}
+          >
+            <div
+              className="goto-button"
+              style={{ width: isGotoEnabled ? '220px' : '100px' }}
+            >
+              <span>Go To</span>
+              <span className="goto-arrow">▼</span>
+            </div>
             {isGotoDropdownOpen && (
-              <ul className="goto-options">
-                <li>Global Part Info</li>
-                <li>GDA Local Action</li>
+              <ul className="goto-options" style={{ width: isGotoEnabled ? '220px' : '100px' }}>
+                {isGotoEnabled ? (
+                  <>
+                    <li>Global Part Info</li>
+                    <li>GDA Local Action</li>
+                  </>
+                ) : (
+                  <li>Go To:</li>
+                )}
               </ul>
             )}
           </div>
+
 
           <button className="button-primary" onClick={handleClear}>Clear</button>
         </div>
