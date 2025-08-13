@@ -71,11 +71,7 @@ export default function LogisticsConsumerTable({
           {data.filter(row => row.auto === '').map(row => (
             <tr key={row.id}>
               <td className="center">
-                <input
-                  type="checkbox"
-                  checked={selectedCheckboxes.includes(row.id)}
-                  onChange={() => handleCheckboxChange(row.id)}
-                />
+                <input type="checkbox" checked={selectedCheckboxes.includes(row.id)} onChange={() => handleCheckboxChange(row.id)}/>
               </td>
               <td>{row.id}</td>
               <td>{row.designation}</td>

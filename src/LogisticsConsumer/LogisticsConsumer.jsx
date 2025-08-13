@@ -54,7 +54,7 @@ export default function LogisticsConsumer() {
   }, []);
 
   useEffect(() => {
-    // Reset state when partNumber or prefix changes([partNumber,prefix] is dependency array)
+    // Reset everything when partNumber or prefix changes([partNumber,prefix] is dependency array)
     setSelectedMarketConsumer('');
     setMarketOptions([]);
     setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
@@ -62,7 +62,9 @@ export default function LogisticsConsumer() {
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setErrorMessage('');
+    setSortMessage('');
   }, [partNumber, prefix]);
+  
 
 
   //If the user clicks anywhere outside the Market Consumer dropdown or the Go To menu, those menus should close.
@@ -214,19 +216,22 @@ export default function LogisticsConsumer() {
     setTableData([]);
     setSortField(null);
     setSortMessage('');
+    setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
 
   };
 
   //handles the checkbox selection (here we ensure that when we select the checkbox or checkboxes then if any radio button was selected previously it is unselected)
   const handleCheckboxSelection = (selected) => {
     setSelectedCheckboxes(selected);
-    setSelectedRadio(null); //radio is unselected
+    setSelectedRadio(null); //radio is unselected\
+    setSortMessage(" ");
   };
 
   //handles the radio selection (here we ensure that when we select the radio button then if any checkboxes was selected previously it is unselected)
   const handleRadioSelection = (id) => {
     setSelectedRadio(id);
     setSelectedCheckboxes([]); //checkboxes is unselected
+    setSortMessage(" ");
   };
 
   //when we select the checkbox/checkboxes and we click on Add Consumer button , the rows(consumers) have autoflag set to N,date is today date
@@ -542,7 +547,7 @@ export default function LogisticsConsumer() {
         {showDeleteDialog && (
           <div className="modal-overlay">
             <div className="modal-box">
-              <p>Do you want to delete?</p>
+              <p style={{marginBottom:'30px'}}>Do you want to delete the selected Row?</p>
               <div className="modal-actions">
                 <button className="button-primary" onClick={confirmDelete}>OK</button>
                 <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>

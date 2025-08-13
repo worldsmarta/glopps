@@ -1,5 +1,3 @@
-
-
 const logisticsDatabase = {
   '100|VO': {
     marketConsumers: [

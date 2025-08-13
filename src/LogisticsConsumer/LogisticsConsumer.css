@@ -197,9 +197,9 @@
 /*  Modal Box (for delete box)*/
 .modal-box {
   background: #fff;
-  padding: 20px 30px;
+  padding: 40px 10px;
   border-radius: 8px;
-  width: 280px;
+  width: 400px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   font-weight: bold;
