@@ -99,15 +99,12 @@
   border-radius: 8px;
   background: #fff;
   cursor: pointer;
-  transition: border 0.2s;
+  transition: background 0.2s;
+
 }
 
-.marketconsumer-dropdown .selected {
-  padding: 10px;
-  font-size: 14px;
-}
 
-/* Options list */
+/* Options list of market consumer dropdown*/
 .dropdown-options {
   list-style: none;
   margin: 0;
@@ -123,14 +120,14 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Option item */
+/* Option item of market consumer dropdown */
 .dropdown-options li {
   padding: 10px;
-  min-height: 20px; /* ensures consistent height */
+  min-height: 20px;
   transition: background 0.2s;
 }
 
-/* Hover effect on option */
+/* Hover effect on options in the dropdown */
 .dropdown-options li:hover {
   background: #1e4f91;
   color: #fff;
@@ -141,24 +138,12 @@
   border-color: #1e4f91;
   box-shadow: 0 0 5px rgba(30, 79, 145, 0.3);
 }
-/* Add this to style the empty dropdown display with subtle placeholder effect */
-.marketconsumer-dropdown .selected.empty {
-  color: #aaa;         
-  
-  min-height: 38px;     /* Ensure height matches input-field height */
-  padding: 10px;
-}
-
 
 .marketconsumer-dropdown .selected {
-  min-height: 38px; /* Adjust to match your input field's height */
+  min-height: 38px; 
   padding: 10px;
-}
-
-/* Add arrow inside dropdown */
-.marketconsumer-dropdown .selected {
   position: relative;
-  padding-right: 25px; /* space for arrow */
+  padding-right: 25px; 
 }
 
 .marketconsumer-dropdown .dropdown-arrow {
@@ -174,29 +159,28 @@
 .marketconsumer-dropdown:focus {
   border-color: #1e4f91;
   box-shadow: 0 0 5px rgba(30, 79, 145, 0.3);
-  outline: none; /* remove default browser outline */
+  outline: none; 
 }
 
 
 
-
-/* ✅ Error Banner with Fixed Height */
+/* error message display */
 .error-banner {
-  height: 10px;                /* Reserve space to prevent form jump */
-  
-  color: #b30000;              /* Red warning color */
+  height: 10px;                
+  color: #b30000;             
   font-weight: bold;
   font-size: 14px;
   margin-top: 10px;
   margin-bottom: 0;
 }
 
-/* ✅ Placeholder keeps height without showing text */
+/* Placeholder keeps height without showing text when there is no error*/
 .error-placeholder {
   visibility: hidden;
 }
 
-/* ✅ Modal Overlay */
+
+/* Modal Overlay (used for delete box and user id info box)*/
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -210,7 +194,7 @@
   z-index: 999;
 }
 
-/* ✅ Small Modal Box */
+/*  Modal Box (for delete box)*/
 .modal-box {
   background: #fff;
   padding: 20px 30px;
@@ -221,58 +205,43 @@
   font-weight: bold;
 }
 
+/* modal box (for user id info box) */
 .modal-box2 {
   background: #fff;
   padding: 20px 20px;
   border-radius: 8px;
   width: 480px;
-  /* text-align: center; */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   font-size: 14px;
 }
 
-/* ✅ Modal Buttons */
+/* Modal(delete) box Buttons */
 .modal-actions {
   margin-top: 15px;
   display: flex;
   justify-content: space-around;
 }
 
-.button-secondary {
-  background: #999;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
-.button-secondary:hover {
-  background: #777;
-}
-/* ✅ Go To Dropdown */
+
+/* Go To Dropdown */
 .goto-dropdown {
   position: relative;
   display: inline-block;
 }
 
 .goto-button {
-  background-color: #1e4f91;   /* same as button */
-  color: #fff;
-  width: 220px;                /* ✅ increased width */
+  background-color: #1e4f91;   
+  color: #fff;           
   padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
   display: flex;
-  justify-content: space-between; /* ✅ places arrow on extreme right */
+  justify-content: space-between; 
   align-items: center;
   transition: background 0.3s ease;
-}
-
-.goto-button:hover {
-  background-color: #163e73;
 }
 
 /* Dropdown Options */
@@ -285,7 +254,6 @@
   position: absolute;
   top: 100%;
   right: 0;
-  width: 220px;   /* ✅ match button width */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   z-index: 10;
 }
@@ -306,11 +274,6 @@
   font-weight: bold;
 }
 
-.goto-options li:last-child {
-  border-bottom: none;
-}
-
-/* ✅ Arrow Style */
 .goto-arrow {
   font-size: 12px;
   margin-left: auto;

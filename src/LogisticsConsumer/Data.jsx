@@ -15,11 +15,11 @@ const logisticsDatabase = {
         { id: '1000000030', designation: 'DC Byhalia', city: 'BY', auto: '', resp: '', date: '' },
         { id: '1000000037', designation: 'DC Mexico', city: 'ME', auto: '', resp: '', date: '' },
         { id: '1000000038', designation: 'DC Curitiba', city: 'CU', auto: '', resp: '', date: '' },
-         { id: '1000000002', designation: 'DC Incheon', city: 'IN', auto: '', resp: '', date: '' },
-        { id: '1000000024', designation: 'DC Sydney', city: 'SY', auto: '', resp: '', date: '' },
-        { id: '1000000030', designation: 'DC Byhalia', city: 'BY', auto: '', resp: '', date: '' },
-        { id: '1000000037', designation: 'DC Mexico', city: 'ME', auto: '', resp: '', date: '' },
-        { id: '1000000038', designation: 'DC Curitiba', city: 'CU', auto: '', resp: '', date: '' }
+         { id: '1000000005', designation: 'DC Incheon', city: 'IN', auto: '', resp: '', date: '' },
+        { id: '1000000025', designation: 'DC Sydney', city: 'SY', auto: '', resp: '', date: '' },
+        { id: '1000000035', designation: 'DC Byhalia', city: 'BY', auto: '', resp: '', date: '' },
+        { id: '1000000036', designation: 'DC Mexico', city: 'ME', auto: '', resp: '', date: '' },
+        { id: '1000000039', designation: 'DC Curitiba', city: 'CU', auto: '', resp: '', date: '' }
       ],
       '31971': [
         { id: '1000000014', designation: 'DC Lyon', city: 'LY', auto: 'Y', resp: 'R17XX', date: '20250714' },

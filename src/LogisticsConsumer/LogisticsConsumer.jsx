@@ -545,7 +545,7 @@ export default function LogisticsConsumer() {
               <p>Do you want to delete?</p>
               <div className="modal-actions">
                 <button className="button-primary" onClick={confirmDelete}>OK</button>
-                <button className="button-secondary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
+                <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
               </div>
             </div>
           </div>
