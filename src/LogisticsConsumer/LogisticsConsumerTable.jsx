@@ -9,24 +9,20 @@ export default function LogisticsConsumerTable({
     onCheckboxChange(updated);
   };
 
+  //handles the sorting function
   const handleSort = (field, label) => {
     setSortField(label);
     onSort(field, label);
   };
 
+  //sorting based on columns
   const renderSortableHeader = (field, label) => (
-    <th
-      onClick={() => handleSort(field, label)}
-      title={`Sort by: ${label}`}
-      style={{ cursor: 'pointer', position: 'relative' }}
-    >
-      {label}
-    </th>
+    <th onClick={() => handleSort(field, label)} title={`Sort by: ${label}`} style={{ cursor: 'pointer', position: 'relative' }}>{label}</th>
   );
 
   return (
-    <div style={{ marginTop: '20px' }}>
-      <table className="modern-table">
+    <div style={{ marginTop: '20px' , marginBottom:'30px'}}>
+      <table className="logistics-table">
         <thead>
           <tr>
             <th></th>
@@ -39,38 +35,39 @@ export default function LogisticsConsumerTable({
           </tr>
         </thead>
         <tbody>
-          {/* Existing */}
+          {/* the rows above Logistics Consumer to Add */}
+
+           {/* data.filter(row => row.auto === 'Y' || row.auto === 'N') filters the data array to get only the rows where the auto flag is 'Y' or 'N'. 
+          It then uses .map() to iterate over these filtered rows and render a table row for each one. */}
           {data.filter(row => row.auto === 'Y' || row.auto === 'N').map(row => (
             <tr key={row.id}>
               <td className="center">
-                <input
-                  type="radio"
-                  name="consumer"
-                  checked={selectedRadio === row.id}
-                  onChange={() => onRadioChange(row.id)}
-                />
+                <input type="radio" name="consumer" checked={selectedRadio === row.id} onChange={() => onRadioChange(row.id)}/>
               </td>
               <td>{row.id}</td>
               <td>{row.designation}</td>
               <td>{row.city}</td>
               <td>{row.auto}</td>
-              <td
-                style={{ textDecoration: 'underline', cursor: 'pointer', color: '#1e4f91' }}
-                onClick={() => row.resp && onUserClick(row.resp)}
-              >
+              <td style={{ textDecoration: 'underline', cursor: 'pointer', color: '#1e4f91' }} onClick={() => row.resp && onUserClick(row.resp)}>
                 {row.resp}
               </td>
               <td>{row.date}</td>
             </tr>
           ))}
 
-          {/* To Add */}
+
+          {/* rows below Logistics Consumer To Add */}
+
+          {/* data.some(row => row.auto === '') checks if any row in the data array has an empty auto flag. If this condition is true, 
+          it renders a table row with a bold label "Logistics Consumers to add:" spanning all seven columns (colSpan="7"). */}
           {data.some(row => row.auto === '') && (
             <tr className="section-label">
               <td colSpan="7" style={{ fontWeight: 'bold' }}>Logistics Consumers to add:</td>
             </tr>
           )}
 
+          {/* data.filter(row => row.auto === '') filters the data array to get only the rows where the auto flag is an empty string. 
+          It then uses .map() to iterate over these filtered rows and render a table row for each one. */}
           {data.filter(row => row.auto === '').map(row => (
             <tr key={row.id}>
               <td className="center">
