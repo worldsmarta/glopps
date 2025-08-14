@@ -411,7 +411,7 @@ export default function LogisticsConsumer() {
         {/* Header */}
         <div className="form-container" style={{ justifyContent: 'space-between' }}>
           <Link to="/"><button className="button-primary">Home</button></Link>
-          <p className="title">MDM Logistics Consumer</p>
+          <p className="title">MDM Logistics Consume</p>
           <button className="button-primary">User Manual</button>
         </div>
 
