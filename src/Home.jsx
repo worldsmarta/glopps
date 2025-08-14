@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import './Home.css'
 export default function Home(){
     useEffect(() => {
-    document.title = "Home";
+    document.title = "GLOPPS";
   }, []);
     return(
         <div className='background'>
