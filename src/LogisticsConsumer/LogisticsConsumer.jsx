@@ -7,6 +7,8 @@ import { Link } from 'react-router';
 export default function LogisticsConsumer() {
 
   //To make the tab name show "MDM Logistics Consumer" when you open this page.
+//   Runs only once when the component mounts ([] dependency array).
+// Side effect: changes the browser’s tab title.
   useEffect(() => {
     document.title = "MDM Logistics Consumer";
   }, []);
@@ -49,12 +51,15 @@ export default function LogisticsConsumer() {
 
 
   //the cursor is already in the Part Id box when the page opens — the user can start typing immediately.
+  //[]:Runs once when the component mounts.Checks if the partInputRef is pointing to your Part Id input DOM element.
   useEffect(() => {
     if (partInputRef.current) partInputRef.current.focus();
   }, []);
 
+
+//   Runs whenever partNumber or prefix changes.
+// Side effect: clears dropdowns, clears table data, clears error/sort messages.
   useEffect(() => {
-    // Reset everything when partNumber or prefix changes([partNumber,prefix] is dependency array)
     setSelectedMarketConsumer('');
     setMarketOptions([]);
     setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
@@ -81,10 +86,12 @@ export default function LogisticsConsumer() {
     };
     //Every time there’s a click anywhere in the page, run handleClickOutside
     document.addEventListener('click', handleClickOutside);
-  }, []);
+  }, []); //[]: Runs once when the component mounts
 
 
   // Detect text overflow for tooltip dynamically(for name and designation response fields)
+//   Runs whenever marketConsumerDetails changes.
+// Side effect: measures DOM element widths and sets a flag for whether to show the tooltip.
   useEffect(() => {
     if (nameRef.current) {
       setIsNameTruncated(nameRef.current.scrollWidth > nameRef.current.clientWidth);
@@ -119,6 +126,7 @@ export default function LogisticsConsumer() {
     }
     //If partNumber is empty or only spaces and we click Search, show error and return.
     if (!partNumber.trim()) {
+       setIsGotoEnabled(false);
       setErrorMessage('Part Id is required');
       return;
     }
