@@ -429,7 +429,7 @@ export default function LogisticsConsumer() {
             <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
               onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, "partId"); handleEnterKey(e) }} />
 
-            <input type="text" className="input-field" style={{ width: '50px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+            <input type="text" className="input-field" style={{ width: '55px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
               ref={prefixRef} onKeyDown={(e) => { handleTabNavigation(e, "prefix"); handleEnterKey(e) }} />
 
 
@@ -452,7 +452,7 @@ export default function LogisticsConsumer() {
               onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }} ref={marketConsumerRef}
               onKeyDown={(e) => { handleTabNavigation(e, "marketConsumer"); handleEnterKey(e) }} tabIndex={0} >
               {/* selectedmarketconsumer value we get from handleMarketConsumerClick function */}
-              <div className="selected">{selectedMarketConsumer}<span className="dropdown-arrow">▼</span></div>
+              <div className="selected" style={{fontSize:'14px',fontWeight:'500'}}>{selectedMarketConsumer}<span className="dropdown-arrow">▼</span></div>
 
               {/* isMarketDropdownOpen && marketOptions.length > 0 && ( ... )The dropdown list <ul> is shown only if the dropdown is open and 
               there are market options available.Inside the <ul className="dropdown-options">, it maps over marketOptions to render each option as a <li>.
@@ -495,7 +495,7 @@ export default function LogisticsConsumer() {
           </p>
 
           <p style={{ margin: 0, whiteSpace: 'nowrap' }}>GDA:</p>
-          <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
+          <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '15px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
 
           <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
           <p ref={designationRef} style={{flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px',fontWeight: '500', height: '34px', 

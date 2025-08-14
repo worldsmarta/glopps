@@ -73,6 +73,7 @@
 .input-field {
   padding: 10px 10px;
   font-size: 14px;
+  font-weight:500;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
@@ -124,7 +125,9 @@
 .dropdown-options li {
   padding: 10px;
   min-height: 20px;
+  font-size: 14px; 
   transition: background 0.2s;
+  font-weight: 500;
 }
 
 /* Hover effect on options in the dropdown */
