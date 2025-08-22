@@ -3,6 +3,8 @@ import './LogisticsConsumer.css';
 import LogisticsConsumerTable from './LogisticsConsumerTable';
 import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Data';
 import { Link } from 'react-router';
+import { screens } from '../Screens';
+import NavBar from '../Screens';
 
 export default function LogisticsConsumer() {
 
@@ -48,14 +50,19 @@ export default function LogisticsConsumer() {
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState(null);
   const [isGotoEnabled, setIsGotoEnabled] = useState(false);
+  const [showMarketStar, setShowMarketStar] = useState(false);
 
+  // import.meta.env.BASE_URL is used because basename used is glopps not using this does not show the page
+  const openUserManual = () => {
+    window.open(
+      `${import.meta.env.BASE_URL}usermanual.html`, "_blank", "width=800,height=600");
+  };
 
   //the cursor is already in the Part Id box when the page opens — the user can start typing immediately.
   //[]:Runs once when the component mounts.Checks if the partInputRef is pointing to your Part Id input DOM element.
   useEffect(() => {
     if (partInputRef.current) partInputRef.current.focus();
   }, []);
-
 
   //   Runs whenever partNumber or prefix changes.
   // Side effect: clears dropdowns, clears table data, clears error/sort messages.
@@ -69,7 +76,6 @@ export default function LogisticsConsumer() {
     setErrorMessage('');
     setSortMessage('');
   }, [partNumber, prefix]);
-
 
 
   //If the user clicks anywhere outside the Market Consumer dropdown or the Go To menu, those menus should close.
@@ -87,7 +93,6 @@ export default function LogisticsConsumer() {
     //Every time there’s a click anywhere in the page, run handleClickOutside
     document.addEventListener('click', handleClickOutside);
   }, []); //[]: Runs once when the component mounts
-
 
   // Detect text overflow for tooltip dynamically(for name and designation response fields)
   //   Runs whenever marketConsumerDetails changes.
@@ -131,7 +136,9 @@ export default function LogisticsConsumer() {
       setErrorMessage('Part Id is required');
       return;
     }
-
+    if (partNumber.trim() && prefix.trim()) {
+      setShowMarketStar(true);
+    }
 
     //Prefix Handling
     // Get all prefixes for entered part number (if we enter partno. and click on search then this will get all the prefixes corresponding to the part number)
@@ -153,6 +160,7 @@ export default function LogisticsConsumer() {
     if (!currentPrefix && availablePrefixes.length === 1) {
       currentPrefix = availablePrefixes[0]; //availablePrefixes is an array that is why [0] to get the value and store in currentPrefix
       setPrefix(currentPrefix);//set the prefix value
+      setShowMarketStar(true);
     }
     // Show available prefixes if user didn't enter prefix and there is more than one availablePrefixes(length>1)
     if (!currentPrefix) {
@@ -164,7 +172,6 @@ export default function LogisticsConsumer() {
       return;
     }
 
-
     // Fetch market consumers using the partNumber and currentPrefix
     const consumers = await getMarketConsumers(partNumber, currentPrefix);
 
@@ -174,7 +181,6 @@ export default function LogisticsConsumer() {
 
       return;
     }
-
 
     // Populate dropdown (if market consumers exist)
     setMarketOptions([{ id: '', label: '' }, ...consumers]);
@@ -189,7 +195,6 @@ export default function LogisticsConsumer() {
       }
       return;
     }
-
 
     // Extract consumer details
     const selectedObj = consumers.find(c => c.label === selectedMarketConsumer);
@@ -212,7 +217,6 @@ export default function LogisticsConsumer() {
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
     setTableData(data);
-
 
   };
 
@@ -299,7 +303,6 @@ export default function LogisticsConsumer() {
     setDeleteTarget(null);
   };
 
-
   //when we click clear button
   const handleClear = () => {
     setPartNumber('');
@@ -312,6 +315,7 @@ export default function LogisticsConsumer() {
     setSortField('');
     setSortMessage('');
     setIsGotoEnabled(false);
+    setShowMarketStar(false);
 
     if (partInputRef.current) partInputRef.current.focus();
   };
@@ -320,7 +324,6 @@ export default function LogisticsConsumer() {
   //Searches through tableData Finds the row object where the id matches the selected radio’s ID (selectedRadio) Returns that full row object (selectedRadioConsumer)
   const selectedRadioConsumer = tableData.find(c => c.id === selectedRadio);
   const isDeleteEnabled = selectedRadioConsumer?.auto === 'N';//then check if autoflag is N for that selected row with radio button (if yes then delete button enable)
-
 
 
   //this handles the sort based on columns
@@ -374,7 +377,6 @@ export default function LogisticsConsumer() {
     setSortMessage(`Sort By: ${label} in ${newDirection === 'asc' ? 'Ascending' : 'Descending'} Order`);
   };
 
-
   //for now this data is shown in User ID information box
   const getUserDetails = (userId) => {
     if (userId === 'A510468') {
@@ -402,64 +404,62 @@ export default function LogisticsConsumer() {
       handleSearch();
     }
   };
+  // const GotoMenu=['Global Part Info','GDA Local Action','Part Consumer Blocking','Supplier Cross','Renault Truck Supersession','Where Used in Catalogue'];
+  // const Screens=[screens.Parts,screens.Supersession,screens.Structure,screens.MDM];
+  const exclude = ['MDM Logistics Consumer', 'MDM WM Part']
+  const GotoMenu = Object.values(screens).flat().filter(item => !exclude.includes(item));
+
 
   return (
     // form-container class is very important
-    <div className="background">
-      <div className="center-content">
+    <div className="app-container">
+      <NavBar/>
+      <div className="main-content">
+        <div className="background">
+          <div className="center-content">
 
-        {/* Header */}
-        <div className="form-container" style={{ justifyContent: 'space-between' }}>
-          <Link to="/"><button className="button-primary">Home</button></Link>
-          <p className="title">MDM Logistics Consumer</p>
-          <button className="button-primary">User Manual</button>
-        </div>
-
-        {/* Error message / Sort message */}
-        <div className="error-banner form-container">
-          {/* If errorMessage is true (a non-empty string, not null/undefined/false):Show the errorMessage.
-          Else, if sortMessage is true:Show it inside a <span> with black bold text.
-          Else (both are false):Show <span className="error-placeholder">.</span> — probably a placeholder so the space stays consistent even if there’s no message. */}
-          {errorMessage ? errorMessage : sortMessage ? <span style={{ color: 'black', fontWeight: 'bold' }}>{sortMessage}</span> :
-            <span className="error-placeholder">.</span>
-          }
-        </div>
+            {/* Header */}
+            <div className="form-container" style={{ justifyContent: 'space-between', marginTop: '20px' }}>
+              <Link to="/"><button className="button-primary">Home</button></Link>
+              <p className="title">MDM Logistics Consumer</p>
+              <button className="button-primary" onClick={openUserManual}>User Manual</button>
+            </div>
 
 
-        {/* Input Fields */}
-        <div className="form-container">
-          <div className="form-row">
-            {/* part id */}
-            <label className="input-label">Part Id:</label>
-            <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
-              onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, "partId"); handleEnterKey(e) }} />
+            {/* Input Fields */}
+            <div className="form-container">
+              <div className="form-row">
+                {/* part id */}
+                <label className="input-label">Part Id : <span style={{ color: '#e53935' }}>*</span></label>
+                <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
+                  onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, "partId"); handleEnterKey(e) }}
+                  style={{ width: '130px', marginLeft: '10px', marginRight: '10px' }} />
 
-            <input type="text" className="input-field" style={{ width: '55px', marginRight: '30px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-              ref={prefixRef} onKeyDown={(e) => { handleTabNavigation(e, "prefix"); handleEnterKey(e) }} />
+                <input type="text" className="input-field" style={{ width: '55px', marginRight: '20px' }} value={prefix} onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+                  ref={prefixRef} onKeyDown={(e) => { handleTabNavigation(e, "prefix"); handleEnterKey(e) }} />
 
+                {/* market consumer dropdown */}
+                <label className="input-label" style={{ marginRight: '10px' }}>Market Consumer: {showMarketStar ? <span style={{ color: '#e53935' }}>*</span> : '\u00A0'}</label>
+                {/* Always has "marketconsumer-dropdown".Adds "active" only if isMarketDropdownOpen is true. */}
 
-            {/* market consumer dropdown */}
-            <label className="input-label">Market Consumer:</label>
-            {/* Always has "marketconsumer-dropdown".Adds "active" only if isMarketDropdownOpen is true. */}
+                {/* setIsMarketDropdownOpen(prev => !prev); used to open and close the dropdown */}
 
-            {/* setIsMarketDropdownOpen(prev => !prev); used to open and close the dropdown */}
-
-            {/* e.stopPropagation(): e.stopPropagation() (where e represents an Event object) is a method used to prevent the further propagation of an event through 
+                {/* e.stopPropagation(): e.stopPropagation() (where e represents an Event object) is a method used to prevent the further propagation of an event through 
             the DOM (Document Object Model) tree. when i removed the e.stoppropagation() just to see what is its use i saw that when i enter 100 VO and click on search 
             when i click on market consumer dropdown it does not show  */}
 
-            {/* if setIsGotoDropdownOpen(false ) is removed then if goto is open and we click on the marketconsumer dropdown then then the goto dropdown will 
+                {/* if setIsGotoDropdownOpen(false ) is removed then if goto is open and we click on the marketconsumer dropdown then then the goto dropdown will 
           still remain open and show on top of market consumer dropdown */}
 
-            {/* tabindex{0} is to make market consumer focusable */}
+                {/* tabindex{0} is to make market consumer focusable */}
 
-            <div className={`marketconsumer-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
-              onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }} ref={marketConsumerRef}
-              onKeyDown={(e) => { handleTabNavigation(e, "marketConsumer"); handleEnterKey(e) }} tabIndex={0} >
-              {/* selectedmarketconsumer value we get from handleMarketConsumerClick function */}
-              <div className="selected" style={{ fontSize: '14px', fontWeight: '500' }}>{selectedMarketConsumer}<span className="dropdown-arrow">▼</span></div>
+                <div className={`marketconsumer-dropdown ${isMarketDropdownOpen ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setIsMarketDropdownOpen(prev => !prev); setIsGotoDropdownOpen(false); }} ref={marketConsumerRef}
+                  onKeyDown={(e) => { handleTabNavigation(e, "marketConsumer"); handleEnterKey(e) }} tabIndex={0} >
+                  {/* selectedmarketconsumer value we get from handleMarketConsumerClick function */}
+                  <div className="selected" style={{ fontSize: '13px', fontWeight: '600' }}>{selectedMarketConsumer}<span className="dropdown-arrow">▼</span></div>
 
-              {/* isMarketDropdownOpen && marketOptions.length > 0 && ( ... )The dropdown list <ul> is shown only if the dropdown is open and 
+                  {/* isMarketDropdownOpen && marketOptions.length > 0 && ( ... )The dropdown list <ul> is shown only if the dropdown is open and 
               there are market options available.Inside the <ul className="dropdown-options">, it maps over marketOptions to render each option as a <li>.
 
               Each <li> has an onClick handler which:Calls e.stopPropagation() again to prevent the click from bubbling.
@@ -468,133 +468,174 @@ export default function LogisticsConsumer() {
               Calls handleMarketConsumerClick(opt.label) — this will update the selected market consumer and close the dropdown.
               The option text is rendered as opt.label or a non-breaking space ('\u00A0') if empty, to keep layout consistent. */}
 
-              {isMarketDropdownOpen && marketOptions.length > 0 && (
-                <ul className="dropdown-options">
-                  {marketOptions.map((opt, i) => (
-                    <li key={i} onClick={(e) => { e.stopPropagation(); handleMarketConsumerClick(opt.label); }}>
-                      {opt.label || '\u00A0'}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                  {isMarketDropdownOpen && marketOptions.length > 0 && (
+                    <ul className="dropdown-options">
+                      {marketOptions.map((opt, i) => (
+                        <li key={i} onClick={(e) => { e.stopPropagation(); handleMarketConsumerClick(opt.label); }}>
+                          {opt.label || '\u00A0'}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Error message / Sort message */}
+                <div className="message-box">
+                  <p className={`message-text ${sortMessage ? 'sort-message' : ''}`}>
+                    {errorMessage || sortMessage || '\u00A0'}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Response fields */}
-        <div className="form-container" style={{
-          fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row', marginTop: '10px', marginBottom: '10px',
-          alignItems: 'center', justifyContent: 'flex-start'
-        }}>
+            {/* Response fields */}
+            <div className="form-container" style={{
+              fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row', marginTop: '10px', marginBottom: '10px',
+              alignItems: 'center', justifyContent: 'flex-start'
+            }}>
 
-          {/* title={isNameTruncated ? marketConsumerDetails.name : ''} this will show the tooltip only if the name is truncated otherwise not */}
-          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
-          <p ref={nameRef} style={{
+              {/* title={isNameTruncated ? marketConsumerDetails.name : ''} this will show the tooltip only if the name is truncated otherwise not */}
+              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
+              {/* <p ref={nameRef} style={{
             flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px', lineHeight: '34px',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
           }} title={isNameTruncated ? marketConsumerDetails.name : ''}>
             {marketConsumerDetails.name}
-          </p>
+          </p> */}
+              <p ref={nameRef} style={{
+                flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px', lineHeight: '34px',
 
-          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Market Consumer ID:</p>
-          <p style={{ width: '40px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}> {marketConsumerDetails.id}</p>
+              }}>
+                {marketConsumerDetails.name}
+              </p>
 
-          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Product Area:</p>
-          <p style={{ width: '60px', flexShrink: 0, marginLeft: '5px', marginRight: '20px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.productArea}
-          </p>
+              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Market Consumer ID:</p>
+              <p style={{ width: '40px', flexShrink: 0, marginLeft: '5px', marginRight: '10px', fontWeight: '500', lineHeight: '34px' }}> {marketConsumerDetails.id}</p>
 
-          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>GDA:</p>
-          <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '15px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
+              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Product Area:</p>
+              <p style={{ width: '60px', flexShrink: 0, marginLeft: '5px', marginRight: '20px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.productArea}
+              </p>
 
-          <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
-          <p ref={designationRef} style={{
+              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>GDA:</p>
+              <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '15px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
+
+              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
+              {/* <p ref={designationRef} style={{
             flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px',
             lineHeight: '34px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
           }} title={isDesignationTruncated ? marketConsumerDetails.designation : ''}>
             {marketConsumerDetails.designation}
-          </p>
-        </div>
+          </p> */}
 
-
-        {/* Action Buttons */}
-        <div className="form-container" style={{ justifyContent: 'space-between', marginTop: '20px' }}>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <button className="button-primary" onClick={handleSearch}>Search</button>
-            <button className="button-primary" style={{ margin: '0px 20px' }} disabled={selectedCheckboxes.length === 0} onClick={handleAddConsumer}>Add Consumer</button>
-            <button className="button-primary" disabled={!isDeleteEnabled} onClick={handleDeleteClick}>Delete</button>
-          </div>
-
-          <div className={`goto-dropdown ${isGotoDropdownOpen ? 'active' : ''}`} onClick={(e) => {
-            e.stopPropagation(); setIsGotoDropdownOpen(prev => !prev);
-            setIsMarketDropdownOpen(false);
-          }}>
-            <div className="goto-button" style={{ width: isGotoEnabled ? '220px' : '100px' }}>
-              <span>Go To</span>
-              <span className="goto-arrow">▼</span>
+              <p ref={designationRef} style={{
+                flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px',
+                lineHeight: '34px'
+              }}>
+                {marketConsumerDetails.designation}
+              </p>
             </div>
-            {isGotoDropdownOpen && (
-              <ul className="goto-options" style={{ width: isGotoEnabled ? '220px' : '100px' }}>
-                {/* if goto is enabled then the options will be shown otherwise only Go To: will be shown */}
-                {isGotoEnabled ? (
-                  <>
-                    <li>Global Part Info</li>
-                    <li>GDA Local Action</li>
-                  </>
-                ) : (
-                  <li>Go To:</li>
+
+            {/* Action Buttons */}
+            <div className="form-container" style={{ justifyContent: 'space-between', marginTop: '20px' }}>
+              <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <button className="button-primary" onClick={handleSearch}>Search</button>
+                <button className="button-primary" style={{ margin: '0px 20px' }} disabled={selectedCheckboxes.length === 0} onClick={handleAddConsumer}>Add Consumer</button>
+                <button className="button-primary" disabled={!isDeleteEnabled} onClick={handleDeleteClick}>Delete</button>
+              </div>
+
+              <div className={`goto-dropdown ${isGotoDropdownOpen ? 'active' : ''}`} onClick={(e) => {
+                e.stopPropagation(); setIsGotoDropdownOpen(prev => !prev);
+                setIsMarketDropdownOpen(false);
+              }}>
+                <div className="goto-button" style={{ width: isGotoEnabled ? '300px' : '100px' }}>
+                  <span>Go To</span>
+                  <span className="goto-arrow">▼</span>
+                </div>
+
+                {isGotoDropdownOpen && (
+                  <div
+                    className="goto-options-container"
+                    style={{ width: isGotoEnabled ? '300px' : '100px' }} // 👈 apply width here
+                  >
+                    <ul className="goto-options">
+                      {isGotoEnabled ? (
+                        GotoMenu.map((name, index) => (
+                          <li key={index}>{name}</li>
+                        ))
+                      ) : (
+                        <li>Go To:</li>
+                      )}
+                    </ul>
+                  </div>
                 )}
-              </ul>
+
+              </div>
+
+              <button className="button-primary" onClick={handleClear}>Clear</button>
+            </div>
+
+            {/* Logistic consumer Table */}
+            {/* Passing props to a child component(in this case the child component is LogisticsConsumerTable ) */}
+            {/* The form-container is used here to set the width for the entire section */}
+            <div className="form-container" style={{ marginTop: '10px' }}>
+              {/* The table-scroll-container is nested inside to handle the max-height and scrolling */}
+
+              <LogisticsConsumerTable
+                data={tableData}
+                selectedCheckboxes={selectedCheckboxes}
+                selectedRadio={selectedRadio}
+                onCheckboxChange={handleCheckboxSelection}
+                onRadioChange={handleRadioSelection}
+                onSort={handleSort}
+                onUserClick={handleUserClick}
+                setSortField={setSortField}
+              />
+
+            </div>
+
+            {/* Delete message box */}
+            {showDeleteDialog && (
+              <div className="modal-overlay">
+                <div className="modal-box">
+                  <p style={{ marginBottom: '30px' }}>Do you want to delete the selected Row?</p>
+                  <div className="modal-actions">
+                    <button className="button-primary" onClick={confirmDelete}>OK</button>
+                    <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* user id info box */}
+            {/* {userDialogOpen && selectedUserInfo && (...) means Render the user id info only if userDialogOpen is true AND selectedUserInfo is not null/undefined. */}
+            {userDialogOpen && selectedUserInfo && (
+              <div className="modal-overlay">
+                <div className="modal-box2" style={{ fontWeight: '500' }}>
+                  <p style={{ textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}><strong>UserID Information</strong></p>
+
+                  {/* Error message if user ID is R117XX */}
+                  {selectedUserInfo.isUnknown && (
+                    <p style={{ color: 'red', textAlign: 'center', marginTop: '-5px', marginBottom: '10px', fontWeight: '500' }}> USERID NOT KNOWN</p>
+                  )}
+                  <p ><strong>User Id:</strong> {selectedUserInfo.id}</p>
+                  <p><strong>User Name:</strong> {selectedUserInfo.name}</p>
+                  <p><strong>Company:</strong> {selectedUserInfo.company}</p>
+                  <p><strong>Office:</strong> {selectedUserInfo.office}</p>
+                  <p><strong>Department:</strong> {selectedUserInfo.department}</p>
+                  <p><strong>Telephone:</strong> {selectedUserInfo.telephone}</p>
+                  <p><strong>Email:</strong> {selectedUserInfo.email}</p>
+                  <div className="modal-actions">
+                    <button className="button-primary" onClick={() => setUserDialogOpen(false)}>Close</button>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-
-
-          <button className="button-primary" onClick={handleClear}>Clear</button>
         </div>
-
-        {/* Logistic consumer Table */}
-        {/* Passing props to a child component(in this case the child component is LogisticsConsumerTable ) */}
-        <LogisticsConsumerTable data={tableData} selectedCheckboxes={selectedCheckboxes} selectedRadio={selectedRadio} onCheckboxChange={handleCheckboxSelection}
-          onRadioChange={handleRadioSelection} onSort={handleSort} onUserClick={handleUserClick} setSortField={setSortField} />
-
-        {/* Delete message box */}
-        {showDeleteDialog && (
-          <div className="modal-overlay">
-            <div className="modal-box">
-              <p style={{ marginBottom: '30px' }}>Do you want to delete the selected Row?</p>
-              <div className="modal-actions">
-                <button className="button-primary" onClick={confirmDelete}>OK</button>
-                <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* user id info box */}
-        {/* {userDialogOpen && selectedUserInfo && (...) means Render the user id info only if userDialogOpen is true AND selectedUserInfo is not null/undefined. */}
-        {userDialogOpen && selectedUserInfo && (
-          <div className="modal-overlay">
-            <div className="modal-box2" style={{ fontWeight: '500' }}>
-              <p style={{ textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}><strong>UserID Information</strong></p>
-
-              {/* Error message if user ID is R117XX */}
-              {selectedUserInfo.isUnknown && (
-                <p style={{ color: 'red', textAlign: 'center', marginTop: '-5px', marginBottom: '10px' ,fontWeight:'500'}}> USERID NOT KNOWN</p>
-              )}
-              <p ><strong>User Id:</strong> {selectedUserInfo.id}</p>
-              <p><strong>User Name:</strong> {selectedUserInfo.name}</p>
-              <p><strong>Company:</strong> {selectedUserInfo.company}</p>
-              <p><strong>Office:</strong> {selectedUserInfo.office}</p>
-              <p><strong>Department:</strong> {selectedUserInfo.department}</p>
-              <p><strong>Telephone:</strong> {selectedUserInfo.telephone}</p>
-              <p><strong>Email:</strong> {selectedUserInfo.email}</p>
-              <div className="modal-actions">
-                <button className="button-primary" onClick={() => setUserDialogOpen(false)}>Close</button>
-              </div>
-            </div>
-          </div>
-        )}
-
       </div>
     </div>
+
   );
 }
+
+

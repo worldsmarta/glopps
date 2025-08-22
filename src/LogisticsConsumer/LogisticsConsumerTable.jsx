@@ -21,7 +21,7 @@ export default function LogisticsConsumerTable({
   );
 
   return (
-    <div style={{ marginTop: '20px' , marginBottom:'30px'}}>
+    <div className="table-container">
       <table className="logistics-table">
         <thead>
           <tr>
@@ -83,6 +83,7 @@ export default function LogisticsConsumerTable({
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    
   );
 }

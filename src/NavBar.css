@@ -1,0 +1,68 @@
+.navbar-container {
+  width: 20%; /* Set width as a percentage */
+  background-color: #1a2a6c; /* Dark blue background color */
+  color: white; /* White text color */
+  padding: 15px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  display: flex;
+  flex-direction: column; /* Arrange items vertically */
+  align-items: flex-start; /* Align items to the start (left) */
+  /* height: 100vh; */
+  box-sizing: border-box; /* Include padding inside the height */
+  position: sticky; /* Makes the navbar stick while scrolling other content */
+  top: 0; /* Sticks to the top of the viewport */
+}
+
+
+/* Dropdown styling */
+.navbar-dropdown {
+  width: 90%; /* Adjust width relative to navbar container */
+  padding: 8px;
+  margin-bottom: 20px; /* Space below the dropdown */
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #fff; /* White background for the dropdown itself */
+  color: #333; /* Dark text for dropdown options */
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Subscreens display area */
+.subscreens-display {
+  width: 100%;
+  flex-grow: 1; /* Allows it to take up available space */
+  overflow-y: auto; /* Adds scrollbar if subscreens overflow */
+}
+
+/* List of subscreens */
+.subscreens-list {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual subscreen item */
+.subscreen-item {
+  padding: 8px 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Light border between items */
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.subscreen-item:last-child {
+  border-bottom: none; /* No border for the last item */
+}
+
+.subscreen-item:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Light hover effect */
+}
+
+/* Message when no subscreens are selected */
+.no-subscreens-message {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7); /* Lighter white for informative text */
+  text-align: center;
+  padding-top: 20px;
+}

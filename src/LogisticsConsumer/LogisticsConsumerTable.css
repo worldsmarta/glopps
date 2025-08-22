@@ -1,15 +1,13 @@
 /* Table */
 .logistics-table {
-    margin-top: 30px;
-  width: 900px;
+  width: 100%; 
   border-collapse: separate;  
   border-spacing: 0;           
   background: #fff;
   font-size: 14px;
   border: 1px solid #dcdcdc;
-  border-radius: 10px;         
-  overflow: hidden;          
-  margin: 0 auto;     
+  overflow: hidden;  
+  margin-top: 0;        
 }
 
 /* Header of table*/
@@ -20,11 +18,20 @@
   padding: 10px 12px;
   font-weight: 600;
   text-decoration: none;
+
 }
+
+/* Make only header sticky */
+.logistics-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
 
 /* rows of table */
 .logistics-table td {
-  padding: 10px 12px;
+  padding: 6px 12px;
   border-bottom: 1px solid #e0e0e0;
   color: #333;
   font-weight: 500;

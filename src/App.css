@@ -8,7 +8,11 @@
 }
 
 html, body, #root {
-  width: 100%;
+    margin: 0;
+  padding: 0;
   height: 100%;
-  overflow-x: hidden;
+  overscroll-behavior: none; /* 🚫 stop the white gaps/bounce */
+  background: #eaf6fb; /* or your site background color */
 }
+
+
