@@ -1,21 +1,30 @@
-.background {
-  background-color: #eaf6fb;
-  min-height: 100vh; /* allow background to extend beyond viewport */
-  margin: 0;
-  padding: 0;
+/* Parent flex layout: NavBar on left, content on right */
+.home-container {
+  display: flex;
+  min-height: 100vh; /* full screen height */
 }
 
-/* Outer flexbox centered */
+/* Right side content area */
+.home-content {
+  flex: 1; /* take remaining space */
+  background-color: #eaf6fb;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;   /* small padding so content isn’t stuck to edges */
+}
+
+/* No centering now — items will stay at the top */
 .center-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* keep horizontally centered, but top aligned */
 }
 
 .title {
   color: #1a2a6c;
   font-weight: bold;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px; /* space between title and button */
 }
 
 .button-primary {

@@ -28,6 +28,17 @@
   cursor: pointer;
 }
 
+select{
+  outline: none;
+}
+
+select:focus{
+  outline: none;
+}
+.navbar-dropdown :active{
+  border: none;
+}
+
 /* Subscreens display area */
 .subscreens-display {
   width: 100%;
@@ -49,6 +60,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-weight: 500;
 }
 
 .subscreen-item:last-child {
@@ -65,4 +77,82 @@
   color: rgba(255, 255, 255, 0.7); /* Lighter white for informative text */
   text-align: center;
   padding-top: 20px;
+}
+
+.logo{
+  font-weight: 600;
+  font-size:24px;
+}
+
+.userid{
+  font-weight: 500;
+  font-size: 16px;
+  margin: 10px 0px;
+}
+
+/* Wrapper */
+.navbar-custom-dropdown {
+  position: relative;
+  display: inline-block;
+  width: 90%;  /* same as your old .navbar-dropdown */
+  margin-bottom: 20px;
+}
+
+/* Button (trigger) */
+.navbar-custom-button {
+  background-color: #fff;
+  color: #333;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;    /* 👈 pointer on trigger */
+  transition: background 0.3s ease;
+}
+
+/* Arrow */
+.navbar-custom-arrow {
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+/* Dropdown container */
+.navbar-custom-options-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;   /* 👈 fills full width of button */
+  z-index: 100;
+}
+
+/* Options list */
+.navbar-custom-options {
+  max-height: 250px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  /* border: 1px solid #ddd; */
+  /* border-radius: 6px; */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Option items */
+.navbar-custom-options li {
+  padding: 8px;
+  color: #333;
+  cursor: pointer; /* 👈 pointer on options */
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.navbar-custom-options li:hover {
+  background: gray;
+  color: #fff;
 }
