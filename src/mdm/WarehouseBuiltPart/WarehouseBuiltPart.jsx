@@ -1,7 +1,7 @@
 export default function WarehouseBuiltPart(){
     return(
         <>
-        <h1>warehouse buit part</h1>
+        <h1>warehouse built part</h1>
         </>
     )
 }
