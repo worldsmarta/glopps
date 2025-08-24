@@ -1,9 +1,17 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { screens } from "./Screens";
+import './Goto.css';
 
-export default function Goto({ isGotoEnabled,isGotoDropdownOpen,setIsGotoDropdownOpen,setIsMarketDropdownOpen,mode = "exclude", items = [] }) {
-      
+export default function Goto({
+  isGotoEnabled,
+  isGotoDropdownOpen,
+  setIsGotoDropdownOpen,
+  setIsMarketDropdownOpen,
+  mode = "exclude",
+  items = []
+}) {
   const navigate = useNavigate();
+  const location = useLocation();  // 👈 fix here
 
   // Base menu → remove anything from General (like Home)
   let GotoMenu = Object.entries(screens)
@@ -12,17 +20,20 @@ export default function Goto({ isGotoEnabled,isGotoDropdownOpen,setIsGotoDropdow
 
   // Apply extra include/exclude rules
   if (mode === "exclude") {
-    GotoMenu = GotoMenu.filter(sub => !items.includes(sub.name));
+    GotoMenu = GotoMenu.filter((sub) => !items.includes(sub.name));
   } else if (mode === "include") {
-    GotoMenu = GotoMenu.filter(sub => items.includes(sub.name));
+    GotoMenu = GotoMenu.filter((sub) => items.includes(sub.name));
   }
+
+  // 🚫 remove current screen
+  GotoMenu = GotoMenu.filter((sub) => sub.path !== location.pathname);
 
   return (
     <div
       className={`goto-dropdown ${isGotoDropdownOpen ? "active" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
-        setIsGotoDropdownOpen(prev => !prev);
+        setIsGotoDropdownOpen((prev) => !prev);
         setIsMarketDropdownOpen(false);
       }}
     >
@@ -46,7 +57,7 @@ export default function Goto({ isGotoEnabled,isGotoDropdownOpen,setIsGotoDropdow
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(sub.path); // 👈 navigate
+                    navigate(sub.path);
                     setIsGotoDropdownOpen(false);
                   }}
                 >

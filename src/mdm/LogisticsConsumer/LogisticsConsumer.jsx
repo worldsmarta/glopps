@@ -542,7 +542,7 @@ export default function LogisticsConsumer() {
                <Goto  isGotoEnabled={isGotoEnabled}
         isGotoDropdownOpen={isGotoDropdownOpen}
         setIsGotoDropdownOpen={setIsGotoDropdownOpen}
-        setIsMarketDropdownOpen={setIsMarketDropdownOpen} mode="exclude" items={['MDM WM Part','MDM Logistics Consumer']}/>
+        setIsMarketDropdownOpen={setIsMarketDropdownOpen} mode="exclude" items={['MDM WM Part']}/>
 
               <p></p>
             </div>

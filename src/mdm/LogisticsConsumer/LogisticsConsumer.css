@@ -5,7 +5,7 @@
 .app-container {
   display: flex;
   height: 100vh;
-  overflow-y: hidden; /* ensure no vertical scrollbar on the container itself */
+  
 }
 
 .main-content {
@@ -14,7 +14,7 @@
   flex-direction: column;
   padding: 20px;
   flex-grow: 1;
-  overflow-y: hidden; /* prevent background from pushing extra height */
+  
 }
 
 .background {
@@ -22,7 +22,7 @@
   flex: 1;           /* stretch to available height inside main-content */
   margin: 0;
   padding: 0;
-  overflow-y: hidden; /* kills extra vertical scrollbar */
+  
 }
 
 
@@ -225,109 +225,7 @@
   justify-content: space-around;
 }
 
-/* Go To Dropdown */
-.goto-dropdown {
-  position: relative;
-  display: inline-block;
-}
 
-.goto-button {
-  background-color: #1e4f91;   
-  color: #fff;           
-  padding: 10px 20px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  display: flex;
-  justify-content: space-between; 
-  align-items: center;
-  transition: background 0.3s ease;
-}
-
-.goto-options-container {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 100;
-}
-
-/* Scrollable list itself */
-.goto-options {
-  max-height: 250px;
-  overflow-y: overlay; /* scrollbar inside, not pushing */
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: #1e4f91;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-/* WebKit scrollbar styling for goto-options */
-.goto-options::-webkit-scrollbar {
-  width: 6px;
-}
-
-.goto-options::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.goto-options::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-.goto-options::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Firefox scrollbar for goto-options */
-.goto-options {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.4) transparent;
-}
-
-/* Option items */
-.goto-options li {
-  padding: 5px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  font-weight: bold;
-}
-
-.goto-options li:hover {
-  background: #fff;
-  color: #1e4f91;
-  font-weight: bold;
-}
-
-/* WebKit browsers (Chrome, Edge, Safari) for goto-options scrollbar */
-.goto-options::-webkit-scrollbar {
-  width: 6px;
-}
-
-.goto-options::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4); /* white, 40% opacity */
-}
-
-.goto-options::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.6); /* brighter on hover */
-}
-
-.goto-options::-webkit-scrollbar-track {
-  background: transparent; /* keep track invisible */
-}
-
-/* Firefox for goto-options scrollbar */
-.goto-options {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.4) transparent;
-}
-
-.goto-arrow {
-  font-size: 12px;
-  margin-left: auto;
-}
 
 .table-scroll-container {
   width:100%;
