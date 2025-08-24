@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { screens } from "./Screens";
-import './Navbar.css'
+import './Navbar.css';
 
 export default function NavBar() {
   const [selectedCategory, setSelectedCategory] = useState("");
