@@ -11,8 +11,24 @@ html, body, #root {
     margin: 0;
   padding: 0;
   height: 100%;
-  overscroll-behavior: none; /* 🚫 stop the white gaps/bounce */
+  overscroll-behavior: none; /*  stop the white gaps/bounce */
   background: #eaf6fb; /* or your site background color */
 }
+
+/* Parent container: navbar + content */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Right side routed content */
+.layout-content {
+  flex: 1; /* take remaining 80% space */
+  background-color: #eaf6fb;
+  padding: 20px;
+  overflow-y: auto; /* in case content scrolls */
+  width: 80%;
+}
+
 
 

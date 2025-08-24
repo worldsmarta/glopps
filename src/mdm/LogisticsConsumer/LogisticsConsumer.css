@@ -67,6 +67,7 @@
   margin-top: 20px;
   display: flex;
   justify-content: flex-start; /* Aligns its own children to the left */
+  align-items: center;
 }
 
 .form-container .table-container {

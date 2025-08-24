@@ -3,8 +3,9 @@ import './LogisticsConsumer.css';
 import LogisticsConsumerTable from './LogisticsConsumerTable';
 import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Data';
 import { Link } from 'react-router';
-import { screens } from '../Screens';
-import NavBar from '../Screens';
+import { screens } from '../../Screens';
+import NavBar from '../../Navbar';
+import Goto from '../../Goto';
 
 export default function LogisticsConsumer() {
 
@@ -404,23 +405,18 @@ export default function LogisticsConsumer() {
       handleSearch();
     }
   };
-  // const GotoMenu=['Global Part Info','GDA Local Action','Part Consumer Blocking','Supplier Cross','Renault Truck Supersession','Where Used in Catalogue'];
-  // const Screens=[screens.Parts,screens.Supersession,screens.Structure,screens.MDM];
-  const exclude = ['MDM Logistics Consumer', 'MDM WM Part']
-  const GotoMenu = Object.values(screens).flat().filter(item => !exclude.includes(item));
+  
 
 
   return (
-    // form-container class is very important
-    <div className="app-container">
-      <NavBar/>
-      <div className="main-content">
+  
+      <div >
         <div className="background">
           <div className="center-content">
 
             {/* Header */}
             <div className="form-container" style={{ justifyContent: 'space-between', marginTop: '20px' }}>
-              <Link to="/"><button className="button-primary">Home</button></Link>
+              <button className="button-primary" onClick={handleClear}>Clear</button>
               <p className="title">MDM Logistics Consumer</p>
               <button className="button-primary" onClick={openUserManual}>User Manual</button>
             </div>
@@ -543,35 +539,12 @@ export default function LogisticsConsumer() {
                 <button className="button-primary" disabled={!isDeleteEnabled} onClick={handleDeleteClick}>Delete</button>
               </div>
 
-              <div className={`goto-dropdown ${isGotoDropdownOpen ? 'active' : ''}`} onClick={(e) => {
-                e.stopPropagation(); setIsGotoDropdownOpen(prev => !prev);
-                setIsMarketDropdownOpen(false);
-              }}>
-                <div className="goto-button" style={{ width: isGotoEnabled ? '300px' : '100px' }}>
-                  <span>Go To</span>
-                  <span className="goto-arrow">▼</span>
-                </div>
+               <Goto  isGotoEnabled={isGotoEnabled}
+        isGotoDropdownOpen={isGotoDropdownOpen}
+        setIsGotoDropdownOpen={setIsGotoDropdownOpen}
+        setIsMarketDropdownOpen={setIsMarketDropdownOpen} mode="exclude" items={['MDM WM Part','MDM Logistics Consumer']}/>
 
-                {isGotoDropdownOpen && (
-                  <div
-                    className="goto-options-container"
-                    style={{ width: isGotoEnabled ? '300px' : '100px' }} // 👈 apply width here
-                  >
-                    <ul className="goto-options">
-                      {isGotoEnabled ? (
-                        GotoMenu.map((name, index) => (
-                          <li key={index}>{name}</li>
-                        ))
-                      ) : (
-                        <li>Go To:</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-              </div>
-
-              <button className="button-primary" onClick={handleClear}>Clear</button>
+              <p></p>
             </div>
 
             {/* Logistic consumer Table */}
@@ -633,7 +606,7 @@ export default function LogisticsConsumer() {
           </div>
         </div>
       </div>
-    </div>
+    
 
   );
 }
