@@ -1,7 +1,7 @@
 // NavBar.jsx
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { screens } from "./Screens";
+import { screens } from "../Screens";
 import './Navbar.css';
 
 export default function NavBar() {

@@ -4,7 +4,7 @@ import LogisticsConsumerTable from './LogisticsConsumerTable';
 import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Data';
 import { Link } from 'react-router';
 import { screens } from '../../Screens';
-import NavBar from '../../Navbar';
+import NavBar from '../../navbar/Navbar';
 import Goto from '../../Goto';
 
 export default function LogisticsConsumer() {
