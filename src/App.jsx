@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router";
 import './App.css';
 import { screens } from "./Screens";
-import NavBar from "./navbar/Navbar";
+import NavBar from "./Navbar";
 
 export default function App() {
   return (
