@@ -30,15 +30,12 @@ export const screens = {
     { name: "Warehouse Built Part", path: "/mdm/warehouseBuiltPart",component:WarehouseBuiltPart },
     { name: "MDM Logistics Consumer", path: "/mdm/logisticsConsumer",component:LogisticsConsumer }
   ],
-  
-
-
   General:  [
       { name: "System Info", path: "/",component:Home }  ,
       { name: "Help & Support", path: "/",component:Home }  ,
       { name: "NDA", path: "/",component:Home }  
     ]
-  
+    
 };
 
 

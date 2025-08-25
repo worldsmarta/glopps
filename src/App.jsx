@@ -9,16 +9,11 @@ export default function App() {
       {/* Navbar always visible, fixed 20% width */}
       <NavBar />
 
-      {/* Routed content takes 80% */}
+      {/* main content takes 80% width of the screen*/}
       <div className="layout-content">
         <Routes>
           {Object.values(screens).flat().map((item, index) => (
-            <Route
-              key={index}
-              path={item.path}
-              element={<item.component />}
-            />
-          ))}
+            <Route key={index} path={item.path} element={<item.component />}/>))}
         </Routes>
       </div>
     </div>

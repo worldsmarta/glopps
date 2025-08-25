@@ -2,9 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import './LogisticsConsumer.css';
 import LogisticsConsumerTable from './LogisticsConsumerTable';
 import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Data';
-import { Link } from 'react-router';
-import { screens } from '../../Screens';
-import NavBar from '../../navbar/Navbar';
 import Goto from '../../Goto';
 
 export default function LogisticsConsumer() {
@@ -38,13 +35,10 @@ export default function LogisticsConsumer() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const partInputRef = useRef(null);
-  const nameRef = useRef(null);
   const designationRef = useRef(null);
   const partIdRef = useRef(null);
   const prefixRef = useRef(null);
   const marketConsumerRef = useRef(null);
-  const [isNameTruncated, setIsNameTruncated] = useState(false);
-  const [isDesignationTruncated, setIsDesignationTruncated] = useState(false);
   const [sortMessage, setSortMessage] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
@@ -95,17 +89,6 @@ export default function LogisticsConsumer() {
     document.addEventListener('click', handleClickOutside);
   }, []); //[]: Runs once when the component mounts
 
-  // Detect text overflow for tooltip dynamically(for name and designation response fields)
-  //   Runs whenever marketConsumerDetails changes.
-  // Side effect: measures DOM element widths and sets a flag for whether to show the tooltip.
-  useEffect(() => {
-    if (nameRef.current) {
-      setIsNameTruncated(nameRef.current.scrollWidth > nameRef.current.clientWidth);
-    }
-    if (designationRef.current) {
-      setIsDesignationTruncated(designationRef.current.scrollWidth > designationRef.current.clientWidth);
-    }
-  }, [marketConsumerDetails]);
 
   // TAB navigation handler
   const handleTabNavigation = (e, current) => {
@@ -490,15 +473,8 @@ export default function LogisticsConsumer() {
               alignItems: 'center', justifyContent: 'flex-start'
             }}>
 
-              {/* title={isNameTruncated ? marketConsumerDetails.name : ''} this will show the tooltip only if the name is truncated otherwise not */}
               <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
-              {/* <p ref={nameRef} style={{
-            flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px', lineHeight: '34px',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-          }} title={isNameTruncated ? marketConsumerDetails.name : ''}>
-            {marketConsumerDetails.name}
-          </p> */}
-              <p ref={nameRef} style={{
+              <p  style={{
                 flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px', lineHeight: '34px',
 
               }}>
@@ -516,13 +492,6 @@ export default function LogisticsConsumer() {
               <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '15px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
 
               <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
-              {/* <p ref={designationRef} style={{
-            flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px',
-            lineHeight: '34px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-          }} title={isDesignationTruncated ? marketConsumerDetails.designation : ''}>
-            {marketConsumerDetails.designation}
-          </p> */}
-
               <p ref={designationRef} style={{
                 flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px',
                 lineHeight: '34px'
