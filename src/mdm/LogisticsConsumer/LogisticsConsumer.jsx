@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './LogisticsConsumer.css';
+import '../../App.css';
 import LogisticsConsumerTable from './LogisticsConsumerTable';
 import { getMarketConsumers, getLogisticsData, getAvailablePrefixes } from './Data';
 import Goto from '../../Goto';
@@ -13,18 +14,11 @@ export default function LogisticsConsumer() {
     document.title = "MDM Logistics Consumer";
   }, []);
 
+  //fields common to all screens
+  const partNumberRef = useRef(null);
+  const prefixRef = useRef(null);
   const [partNumber, setPartNumber] = useState('');
   const [prefix, setPrefix] = useState('');
-  const [marketOptions, setMarketOptions] = useState([]);
-  const [selectedMarketConsumer, setSelectedMarketConsumer] = useState('');
-
-  const [marketConsumerDetails, setMarketConsumerDetails] = useState({
-    id: '',
-    gda: '',
-    productArea: '',
-    designation: '',
-    name: ''
-  });
   const [tableData, setTableData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
@@ -33,19 +27,19 @@ export default function LogisticsConsumer() {
   const [isGotoDropdownOpen, setIsGotoDropdownOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-
-  const partInputRef = useRef(null);
-  const designationRef = useRef(null);
-  const partIdRef = useRef(null);
-  const prefixRef = useRef(null);
-  const marketConsumerRef = useRef(null);
   const [sortMessage, setSortMessage] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [selectedUserInfo, setSelectedUserInfo] = useState(null);
   const [isGotoEnabled, setIsGotoEnabled] = useState(false);
+
+  //fields unique to logistics consumer
+  const marketConsumerRef = useRef(null);
   const [showMarketStar, setShowMarketStar] = useState(false);
+  const [marketOptions, setMarketOptions] = useState([]);
+  const [selectedMarketConsumer, setSelectedMarketConsumer] = useState('');
+  const [marketConsumerDetails, setMarketConsumerDetails] = useState({ id: '',gda: '', productArea: '',designation: '',name: '' });
 
   // import.meta.env.BASE_URL is used because basename used is glopps not using this does not show the page
   const openUserManual = () => {
@@ -54,9 +48,9 @@ export default function LogisticsConsumer() {
   };
 
   //the cursor is already in the Part Id box when the page opens — the user can start typing immediately.
-  //[]:Runs once when the component mounts.Checks if the partInputRef is pointing to your Part Id input DOM element.
+  //[]:Runs once when the component mounts.Checks if the partNumberRef is pointing to your Part Id input DOM element.
   useEffect(() => {
-    if (partInputRef.current) partInputRef.current.focus();
+    if (partNumberRef.current) partNumberRef.current.focus();
   }, []);
 
   //   Runs whenever partNumber or prefix changes.
@@ -99,7 +93,7 @@ export default function LogisticsConsumer() {
       } else if (current === "prefix") {
         marketConsumerRef.current?.focus();
       } else if (current === "marketConsumer") {
-        partIdRef.current?.focus(); // Loop back to Part ID
+        partNumberRef.current?.focus(); // Loop back to Part ID
       }
     }
   };
@@ -109,13 +103,10 @@ export default function LogisticsConsumer() {
     //We start fresh every search — no old errors should show.
     setErrorMessage('');
     setIsGotoEnabled(true);
-    // Focus the first Part Id box(Part number) after search
-    // if (partInputRef.current) {
-    //   partInputRef.current.focus();
-    // }
+   
     //If partNumber is empty or only spaces and we click Search, show error and return.
     if (!partNumber.trim()) {
-      partInputRef.current.focus();
+      partNumberRef.current.focus();
       setIsGotoEnabled(false);
       setErrorMessage('Part Id is required');
       return;
@@ -130,9 +121,8 @@ export default function LogisticsConsumer() {
 
     //if the partNumber does not exist then there will be no corresponding prefix for that
     if (availablePrefixes.length === 0) {
-      partInputRef.current.focus();
+     partNumberRef.current.focus();
       setErrorMessage('PART ID MISSING IN GLOPPS');
-      clearTableAndOptions();
       return;
     }
 
@@ -202,13 +192,6 @@ export default function LogisticsConsumer() {
     setSelectedRadio(null);
     setTableData(data);
 
-  };
-
-  //clearing all the data in the screen
-  const clearTableAndOptions = () => {
-    setMarketOptions([]);
-    setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
-    setTableData([]);
   };
 
   //when we select an option for marketconsumer dropdown 
@@ -291,7 +274,9 @@ export default function LogisticsConsumer() {
   const handleClear = () => {
     setPartNumber('');
     setPrefix('');
-    clearTableAndOptions();
+    setMarketOptions([]);
+    setMarketConsumerDetails({ id: '', gda: '', productArea: '', designation: '', name: '' });
+    setTableData([]);
     setSelectedMarketConsumer('');
     setSelectedCheckboxes([]);
     setSelectedRadio(null);
@@ -301,7 +286,7 @@ export default function LogisticsConsumer() {
     setIsGotoEnabled(false);
     setShowMarketStar(false);
 
-    if (partInputRef.current) partInputRef.current.focus();
+    if (partNumberRef.current) partNumberRef.current.focus();
   };
 
   //when the delete button will be enabled
@@ -410,7 +395,7 @@ export default function LogisticsConsumer() {
               <div className="form-row">
                 {/* part id */}
                 <label className="input-label">Part Id : <span style={{ color: '#e53935' }}>*</span></label>
-                <input type="text" className="input-field" ref={(el) => { partInputRef.current = el; partIdRef.current = el; }} value={partNumber}
+                <input type="text" className="input-field" ref={(el) => { partNumberRef.current = el; }} value={partNumber}
                   onChange={(e) => setPartNumber(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, "partId"); handleEnterKey(e) }}
                   style={{ width: '130px', marginLeft: '10px', marginRight: '10px' }} />
 
@@ -468,12 +453,10 @@ export default function LogisticsConsumer() {
             </div>
 
             {/* Response fields */}
-            <div className="form-container" style={{
-              fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row', marginTop: '10px', marginBottom: '10px',
-              alignItems: 'center', justifyContent: 'flex-start'
-            }}>
+            <div className="form-container" style={{fontSize: '14px', fontWeight: 'bold', display: 'flex', flexDirection: 'row', marginTop: '10px', marginBottom: '10px',
+              alignItems: 'center', justifyContent: 'flex-start'}}>
 
-              <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Name:</p>
+              <p>Name:</p>
               <p  style={{
                 flex: '1 1 200px', maxWidth: '300px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px', lineHeight: '34px',
 
@@ -492,7 +475,7 @@ export default function LogisticsConsumer() {
               <p style={{ width: '20px', flexShrink: 0, marginLeft: '5px', marginRight: '15px', fontWeight: '500', lineHeight: '34px' }}>{marketConsumerDetails.gda}</p>
 
               <p style={{ margin: 0, whiteSpace: 'nowrap' }}>Designation:</p>
-              <p ref={designationRef} style={{
+              <p style={{
                 flex: '1 1 100px', maxWidth: '100px', marginLeft: '5px', marginRight: '10px', fontWeight: '500', height: '34px',
                 lineHeight: '34px'
               }}>
@@ -511,7 +494,7 @@ export default function LogisticsConsumer() {
                <Goto  isGotoEnabled={isGotoEnabled}
         isGotoDropdownOpen={isGotoDropdownOpen}
         setIsGotoDropdownOpen={setIsGotoDropdownOpen}
-        setIsMarketDropdownOpen={setIsMarketDropdownOpen} mode="exclude" items={['MDM WM Part']}/>
+        dropdownOpen={setIsMarketDropdownOpen} mode="exclude" items={['MDM WM Part']}/>
 
               <p></p>
             </div>
@@ -579,5 +562,3 @@ export default function LogisticsConsumer() {
 
   );
 }
-
-

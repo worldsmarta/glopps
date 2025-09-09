@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router";
 import { screens } from "./Screens";
 import './Goto.css';
 
-export default function Goto({ isGotoEnabled, isGotoDropdownOpen, setIsGotoDropdownOpen, setIsMarketDropdownOpen, mode = "exclude", items = [] }) {
+export default function Goto({ isGotoEnabled, isGotoDropdownOpen, setIsGotoDropdownOpen, dropdownOpen, mode = "exclude", items = [] }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,7 +21,7 @@ export default function Goto({ isGotoEnabled, isGotoDropdownOpen, setIsGotoDropd
   GotoMenu = GotoMenu.filter((sub) => sub.path !== location.pathname);
 
   return (
-    <div className='goto-dropdown' onClick={(e) => { e.stopPropagation(); setIsGotoDropdownOpen((prev) => !prev); setIsMarketDropdownOpen(false) }}>
+    <div className='goto-dropdown' onClick={(e) => { e.stopPropagation(); setIsGotoDropdownOpen((prev) => !prev); dropdownOpen(false) }}>
 
       <div className="goto-button" style={{ width: isGotoEnabled ? "300px" : "100px" }}>
         <span>Go To</span>

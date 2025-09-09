@@ -1,4 +1,4 @@
-import "./LogisticsConsumerTable.css";
+import "../../Table.css";
 
 export default function LogisticsConsumerTable({
   data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange, onSort, onUserClick, setSortField }) {
@@ -22,10 +22,10 @@ export default function LogisticsConsumerTable({
 
   return (
     <div className="table-container">
-      <table className="logistics-table">
+      <table className="table">
         <thead>
           <tr>
-            <th></th>
+            <th style={{paddingLeft:'10px'}}></th>
             {renderSortableHeader('id', 'Logistics Consumer ID')}
             {renderSortableHeader('designation', 'Designation')}
             {renderSortableHeader('city', 'City Code')}

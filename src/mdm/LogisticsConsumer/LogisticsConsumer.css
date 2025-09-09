@@ -25,40 +25,6 @@
   
 }
 
-
-/* MDM logistics consumer title */
-.title {
-  color: #1a2a6c;
-  font-size: 24px;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-/* Button */
-.button-primary {
-  background-color: #1e4f91;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.button-primary:hover {
-  background-color: #163e73;
-}
-
-.button-primary:disabled {
-  background-color: #d3d3d3;  
-  color: #6a6a6a;             
-  cursor: not-allowed;
-  opacity: 1;                 
-  box-shadow: none;
-}
-
 /* Form section aligned left (this class is very imp, removing it can cause serious issues with layout) */
 .form-container {
   width: 95%; /* Remains 75% of its parent (.main-content) */
@@ -81,27 +47,7 @@
   align-items: center;
 }
 
-.input-label {
-  font-size: 14px;
-  font-weight: bold;
-}
 
-/* Styles for part number and prefix input boxes */
-.input-field {
-  padding: 10px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-/* Focus styles for input fields */
-.input-field:focus {
-  border: 1px solid #e53935;
-  outline: none;
-  box-shadow: 0 0 5px 1px rgba(229, 57, 53, 0.5); /* soft red glow */
-}
 
 /* Market Consumer Dropdown */
 .marketconsumer-dropdown {
@@ -235,29 +181,3 @@
   position: relative;   /* needed for sticky */
 }
 
-/* Message Box beside Market Consumer Dropdown */
-.message-box {
-  width: 320px; /* Fixed width as requested */
-  margin-left: 20px; /* Space between dropdown and message box */
-  border: 1px solid #778899;
-  border-radius: 8px;
-  background-color: #eaf6fb;
-  padding: 10px; /* Consistent padding top/bottom */
-  min-height: 60px; /* Fixed height */
-  max-height: 60px; /* Fixed height */
-  overflow-y: auto; /* Enables vertical scrolling */
-}
-
-/* Style for the text inside the message box */
-.message-box .message-text {
-  margin: 0;
-  font-weight: bold;
-  font-size: 14px;
-  color: #b30000; /* Default error message color */
-  white-space: normal; /* Allows text to wrap */
-}
-
-/* Style for sort messages (more specific to override default) */
-.message-box .sort-message {
-  color: black; /* Overrides the default color for sort messages */
-}
