@@ -111,7 +111,7 @@ export default function GdaLocalAction() {
       setPrefix(availablePrefixes[0]);
 
       // Fetch and display data after setting prefix
-      await fetchAndSetData(partNumber, availablePrefixes[0]);
+      await fetchAndSetData(partNumber, availablePrefixes[0], selectedProductArea);
       return; // Exit after fetching data
     }
 
@@ -124,18 +124,18 @@ export default function GdaLocalAction() {
 
     // If prefix is entered, fetch data
     if (prefix.trim()) {
-      await fetchAndSetData(partNumber, prefix);
+      await fetchAndSetData(partNumber, prefix, selectedProductArea);
     }
   };
 
   // Helper function to fetch and set data
-  const fetchAndSetData = async (partNumber, prefix) => {
+  const fetchAndSetData = async (partNumber, prefix, selectedProductArea) => {
     const data = await getResponseFieldsData(partNumber, prefix);
     setName(data.name);
     setPartStageVersion(data.partStageVersion);
     setBrandMark(data.brandMark);
 
-    const tabledata = await getGdaData(partNumber, prefix);
+    const tabledata = await getGdaData(partNumber, prefix, selectedProductArea);
     setTableData(tabledata);
   };
 
@@ -235,7 +235,7 @@ export default function GdaLocalAction() {
     const existing = tableData.filter(row => row.IntroDate !== '' && row.userid !== '' && row.chgdte !== '');
 
     //GDA/Consumers to add
-    const gdaconsumerstoadd = tableData.filter(row => row.IntroDate === '' && row.userid === '' && row.chgdte === '');
+    const gdaconsumerstoadd = tableData.filter(row => row.IntroDate === '' && row.userid === '' && row.chgdte === '' && row.consumer !== '');
 
     //GDA/LDA to update
     const gdaldatoupdate = tableData.filter(row => row.IntroDate === '' && row.userid === '' && row.chgdte === '' && row.consumer === '');
@@ -302,7 +302,8 @@ export default function GdaLocalAction() {
     }
   };
 
-
+  // Get an array of full names for display in your list
+  const productAreaFullNames = Object.values(productArea);
   return (
     <>
       {/* clear, title and user manual */}
@@ -319,7 +320,7 @@ export default function GdaLocalAction() {
           <label className='input-label'>Part Id: <span style={{ color: 'red' }}>*</span>
           </label>
           <input type='text' className='input-field' ref={partNumberRef} value={partNumber} onChange={(e) => setPartNumber(e.target.value)}
-            onKeyDown={(e) => { handleTabNavigation(e, 'prefix'); handleEnterKey(e); }} />
+            onKeyDown={(e) => { handleTabNavigation(e, 'partNumber'); handleEnterKey(e); }} />
           <input type='text' className='input-field' style={{ width: '50px', marginLeft: '10px' }} ref={prefixRef} value={prefix}
             onChange={(e) => setPrefix(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, 'prefix'); handleEnterKey(e); }} />
         </div>
@@ -334,10 +335,11 @@ export default function GdaLocalAction() {
               <div className='selected' style={{ fontSize: '13px', fontWeight: 'bold' }}>{selectedProductArea || ''}</div>
               <span className='dropdown-arrow'>&#9660;</span>
             </div>
+
             {isDropdownOpen && (
               <ul className='dropdown-options'>
 
-                {productArea.map((area, index) => (
+                {productAreaFullNames.map((area, index) => (
                   <li key={index} onClick={() => handleProductAreaSelect(area)}>
                     {area || '\u00A0'}
                   </li>
@@ -354,7 +356,7 @@ export default function GdaLocalAction() {
         </div>
 
         {/* message box */}
-        <div className='message-box'>
+        <div className='message-box' style={{ width: '320px' }}>
           <p className={`message-text ${sortMessage ? 'sort-message' : ''}`}>
             {errorMessage || sortMessage || '\u00A0'}
           </p>
@@ -415,43 +417,43 @@ export default function GdaLocalAction() {
         onUserClick={handleUserClick}
         setSortField={setSortField} />
 
-                {/* Delete message box */}
-            {showDeleteDialog && (
-              <div className="modal-overlay">
-                <div className="modal-box">
-                  <p style={{ marginBottom: '30px' }}>Do you want to delete the selected Row?</p>
-                  <div className="modal-actions">
-                    <button className="button-primary" onClick={confirmDelete}>OK</button>
-                    <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
-                  </div>
-                </div>
-              </div>
-            )}
+      {/* Delete message box */}
+      {showDeleteDialog && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <p style={{ marginBottom: '30px' }}>Do you want to delete the selected Row?</p>
+            <div className="modal-actions">
+              <button className="button-primary" onClick={confirmDelete}>OK</button>
+              <button className="button-primary" onClick={cancelDelete} style={{ fontWeight: 'bold' }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* user id info box */}
-            {/* {userDialogOpen && selectedUserInfo && (...) means Render the user id info only if userDialogOpen is true AND selectedUserInfo is not null/undefined. */}
-            {userDialogOpen && selectedUserInfo && (
-              <div className="modal-overlay">
-                <div className="modal-box2" style={{ fontWeight: '500' }}>
-                  <p style={{ textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}><strong>UserID Information</strong></p>
+      {/* user id info box */}
+      {/* {userDialogOpen && selectedUserInfo && (...) means Render the user id info only if userDialogOpen is true AND selectedUserInfo is not null/undefined. */}
+      {userDialogOpen && selectedUserInfo && (
+        <div className="modal-overlay">
+          <div className="modal-box2" style={{ fontWeight: '500' }}>
+            <p style={{ textAlign: 'center', fontSize: '16px', marginBottom: '10px' }}><strong>UserID Information</strong></p>
 
-                  {/* Error message if user ID is R117XX */}
-                  {selectedUserInfo.isUnknown && (
-                    <p style={{ color: 'red', textAlign: 'center', marginTop: '-5px', marginBottom: '10px', fontWeight: '500' }}> USERID NOT KNOWN</p>
-                  )}
-                  <p ><strong>User Id:</strong> {selectedUserInfo.id}</p>
-                  <p><strong>User Name:</strong> {selectedUserInfo.name}</p>
-                  <p><strong>Company:</strong> {selectedUserInfo.company}</p>
-                  <p><strong>Office:</strong> {selectedUserInfo.office}</p>
-                  <p><strong>Department:</strong> {selectedUserInfo.department}</p>
-                  <p><strong>Telephone:</strong> {selectedUserInfo.telephone}</p>
-                  <p><strong>Email:</strong> {selectedUserInfo.email}</p>
-                  <div className="modal-actions">
-                    <button className="button-primary" onClick={() => setUserDialogOpen(false)}>Close</button>
-                  </div>
-                </div>
-              </div>
+            {/* Error message if user ID is R117XX */}
+            {selectedUserInfo.isUnknown && (
+              <p style={{ color: 'red', textAlign: 'center', marginTop: '-5px', marginBottom: '10px', fontWeight: '500' }}> USERID NOT KNOWN</p>
             )}
+            <p ><strong>User Id:</strong> {selectedUserInfo.id}</p>
+            <p><strong>User Name:</strong> {selectedUserInfo.name}</p>
+            <p><strong>Company:</strong> {selectedUserInfo.company}</p>
+            <p><strong>Office:</strong> {selectedUserInfo.office}</p>
+            <p><strong>Department:</strong> {selectedUserInfo.department}</p>
+            <p><strong>Telephone:</strong> {selectedUserInfo.telephone}</p>
+            <p><strong>Email:</strong> {selectedUserInfo.email}</p>
+            <div className="modal-actions">
+              <button className="button-primary" onClick={() => setUserDialogOpen(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
