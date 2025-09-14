@@ -1,5 +1,5 @@
 import "../../Table.css";
-
+import { fullProductAreaName } from "./Data";
 export default function GdaLocalActionTable({
     data, selectedCheckboxes, selectedRadio, onCheckboxChange, onRadioChange, onSort, onUserClick, setSortField }) {
 
@@ -51,9 +51,11 @@ export default function GdaLocalActionTable({
                             <td className="center">
                                 <input type="radio" checked={selectedRadio === row.id} onChange={() => onRadioChange(row.id)} />
                             </td>
-                            <td>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
+                            <td title={fullProductAreaName(row.prodarea)}>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> 
+                            <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
                             <td>{row.type}</td> <td>{row.qty}</td> <td>{row.supcode}</td> <td>{row.orderfinal}</td>
-                            <td style={{ textDecoration: 'underline', cursor: 'pointer', color: '#1e4f91' }} onClick={() => row.userid && onUserClick(row.userid)}>{row.userid}</td>
+                            <td style={{ textDecoration: 'underline', cursor: 'pointer', color: '#1e4f91' }} 
+                            onClick={() => row.userid && onUserClick(row.userid)}>{row.userid}</td>
                             <td>{row.chgdte}</td>
                         </tr>
                     ))}
@@ -69,7 +71,7 @@ export default function GdaLocalActionTable({
                             <td className="center">
                                 <input type="checkbox" checked={selectedCheckboxes.includes(row.id)} onChange={() => handleCheckboxChange(row.id)} />
                             </td>
-                            <td>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
+                            <td title={fullProductAreaName(row.prodarea)}>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
                             <td>{row.type}</td> <td>{row.qty}</td> <td>{row.supcode}</td> <td>{row.orderfinal}</td><td >{row.userid}</td> <td>{row.chgdte}</td>
                         </tr>
                     ))}
@@ -85,7 +87,7 @@ export default function GdaLocalActionTable({
                             <td className="center">
                                  <input type="radio" checked={selectedRadio === row.id} onChange={() => onRadioChange(row.id)} />
                             </td>
-                            <td>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
+                            <td title={fullProductAreaName(row.prodarea)}>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
                             <td>{row.type}</td> <td>{row.qty}</td> <td>{row.supcode}</td> <td>{row.orderfinal}</td><td >{row.userid}</td> <td>{row.chgdte}</td>
                         </tr>
                     ))}

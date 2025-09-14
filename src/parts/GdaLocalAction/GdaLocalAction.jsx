@@ -337,9 +337,8 @@ const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPuse
           <label className='input-label'>Product Area : </label>
           <div style={{ display: 'flex', position: 'relative', width: '200px', marginLeft: '10px' }}>
             <div className='productarea-dropdown' tabIndex={0} onClick={() => { setIsDropdownOpen(!isDropdownOpen), setIsGotoDropdownOpen(false) }}
-              ref={productAreaRef}
-              onKeyDown={(e) => { handleTabNavigation(e, 'productArea') }} >
-              <div className='selected' style={{ fontSize: '13px', fontWeight: 'bold' }}>{selectedProductArea || ''}</div>
+              ref={productAreaRef} onKeyDown={(e) => { handleTabNavigation(e, 'productArea') }} >
+              <div className='selected' style={{ fontSize: '13px', fontWeight: 'bold' }}onKeyDown={(e)=>{handleEnterKey(e)}} tabIndex={0} ref={productAreaRef} >{selectedProductArea || ''}</div>
               <span className='dropdown-arrow'>&#9660;</span>
             </div>
 
@@ -365,7 +364,7 @@ const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPuse
   ref={showPusersRef}
   checked={showPusers}
   onChange={(e) => setShowPusers(e.target.checked)}
-  onKeyDown={(e) => { handleTabNavigation(e, 'showPusers') }}
+  onKeyDown={(e) => { handleTabNavigation(e, 'showPusers'); handleEnterKey(e); }}
 />
         </div>
 
