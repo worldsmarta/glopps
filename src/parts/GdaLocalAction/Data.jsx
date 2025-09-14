@@ -4,11 +4,8 @@
 export const productArea={"":"","VTB":"VOLVO TRUCK & BUS", "MACK":"MACK", "RENAULT":"RENAULT","UD": "UD TRUCKS", "ETB":"EICHER TRUCK & BUS","VCE":"VOLVO CE",
   "PENTA":"VOLVO PENTA" };
 
-
-// export const productArea=['option1','option2']
-
 export const gdaDatabase={
-    '100|VO':{name:'DUMMY',partStageVersion:'P/001',brandMark:'0 - No Branding',
+     '100|VO':{name:'DUMMY',partStageVersion:'P/001',brandMark:'0 - No Branding',
       data:[
       {id:'1',prodarea:'VTB',gda:'EU',designation:'GENT',consumer:'1002',comp:'03',lda:'',IntroDate:'19930607',type:'S',qty:'0',supcode:'',orderfinal:'',userid:'IMS',chgdte:'20111021'},
       {id:'2',prodarea:'VTB',gda:'NA',designation:'BYHALIA/COLUMBUS',consumer:'4173',comp:'03',lda:'',IntroDate:'19930607',type:'S',qty:'0',supcode:'',orderfinal:'',userid:'IMS',chgdte:'20111021'},
@@ -20,8 +17,19 @@ export const gdaDatabase={
 
       ]
     },
+
     '100|VOE':{name:'DUMMY',partStageVersion:'P/001',brandMark:'0 - No Branding'},
-    '100|VOP':{name:'DUMMY',partStageVersion:'P/001',brandMark:'0 - No Branding'},
+
+
+     '100|VOP':{name:'DUMMY',partStageVersion:'P/001',brandMark:'0 - No Branding',
+      data:[
+         {id:'1',prodarea:'PENTA',gda:'EU',designation:'GENT',consumer:'1618',comp:'04',lda:'',IntroDate:'20151209',type:'S',qty:'0',supcode:'',orderfinal:'',userid:'Z051378',chgdte:'20151209'},
+      {id:'2',prodarea:'PENTA',gda:'NA',designation:'BYHALIA',consumer:'4125',comp:'04',lda:'',IntroDate:'20151209',type:'S',qty:'0',supcode:'',orderfinal:'',userid:'Z051378',chgdte:'20151209'},
+      {id:'3',prodarea:'PENTA',gda:'SA',designation:'CURTIBA',consumer:'8441',comp:'04',lda:'',IntroDate:'20160926',type:'S',qty:'0',supcode:'',orderfinal:'',userid:'Z051378',chgdte:'20160926'},
+      ]
+     },
+    
+    
 
     '1638189|VO':{name:'EXHAUST PRESSURE GOVERNOR',partStageVersion:'P/018',brandMark:'0 - No Branding'}
 
@@ -46,29 +54,31 @@ const fullNameToAbbr = Object.entries(productArea).reduce((acc, [abbr, fullName]
   return acc;
 }, {});
 
-export function getGdaData(partNumber, prefix, productArea) {
+export function getGdaData(partNumber, prefix, productArea, showPusers) {
   const key = `${partNumber}|${prefix}`;
   return new Promise((resolve) => {
     const dt = gdaDatabase[key]?.data || [];
-
-    // If productArea is falsy, return all data
-    if (!productArea) {
-      setTimeout(() => resolve(dt), 300);
-      return;
-    }
-
-    // Map full name to abbreviation if needed
+    // Convert full name to abbreviation if needed
     const abbr = fullNameToAbbr[productArea];
 
-    // Filter data based on whether productArea is abbreviation or full name
-    const result = abbr
-      ? dt.filter(item => item.prodarea === abbr)
-      : dt.filter(item => item.prodarea === productArea); // fallback if productArea is already abbreviation
+    // If productArea is empty, return all data
+    const filteredByArea = !productArea
+      ? dt
+      : abbr
+        ? dt.filter(item => item.prodarea === abbr)
+        : dt.filter(item => item.prodarea === productArea);
 
-    console.log('productArea:', productArea);
-    console.log('Data:', dt);
-    console.log('Filtered result:', result);
+    // Filter based on showPusers
+    const finalResult = showPusers
+      ? filteredByArea
+      : filteredByArea.filter(item => item.type === 'S' || item.type==='');
 
-    setTimeout(() => resolve(result), 300);
+    console.log('In getGdaData:', { partNumber, prefix, productArea, showPusers });
+    console.log('Data in DB:', gdaDatabase[key]);
+    console.log('Data array:', dt);
+    console.log('Filtered by area:', filteredByArea);
+    console.log('Final result:', finalResult);
+
+    setTimeout(() => resolve(finalResult), 300);
   });
 }

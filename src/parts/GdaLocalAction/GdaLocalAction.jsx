@@ -35,6 +35,7 @@ export default function GdaLocalAction() {
   const [selectedProductArea, setSelectedProductArea] = useState('');
   const [partStageVersion, setPartStageVersion] = useState('');
   const [brandMark, setBrandMark] = useState('');
+  const [showPusers, setShowPusers] = useState(false);
 
   // Set document title
   useEffect(() => {
@@ -88,57 +89,62 @@ export default function GdaLocalAction() {
     }
   };
 
-  const handleSearch = async () => {
-    setErrorMessage(''); // Clear previous errors at the start
+const handleSearch = async () => {
+   setErrorMessage(''); // Clear previous errors at the start
     setIsGotoEnabled(true);
-    if (!partNumber.trim()) {
+  console.log('Starting handleSearch with:', {
+    partNumber,
+    prefix,
+    selectedProductArea,
+    showPusers
+  });
+
+  // Get available prefixes
+  const availablePrefixes = getAvailablePrefixes(partNumber);
+  console.log('Available prefixes:', availablePrefixes);
+
+  if (availablePrefixes.length === 0) {
+    console.log('No prefixes found for partNumber:', partNumber);
+    setErrorMessage('PART ID MISSING IN GLOPPS');
       partNumberRef.current?.focus();
-      setErrorMessage('Part Id is required');
-      return;
-    }
+      
+    return;
+  }
 
-    //Prefix handling
-    const availablePrefixes = getAvailablePrefixes(partNumber);
+  if (availablePrefixes.length === 1) {
+    setPrefix(availablePrefixes[0]);
+    console.log('Single prefix:', availablePrefixes[0]);
+    await fetchAndSetData(partNumber, availablePrefixes[0], selectedProductArea, showPusers);
+    return;
+  }
 
-    if (availablePrefixes.length === 0) {
-      setErrorMessage('PART ID MISSING IN GLOPPS');
-      partNumberRef.current?.focus();
-      return;
-    }
-
-    // If only one prefix, set it and fetch data immediately
-    if (availablePrefixes.length === 1) {
-      setPrefix(availablePrefixes[0]);
-
-      // Fetch and display data after setting prefix
-      await fetchAndSetData(partNumber, availablePrefixes[0], selectedProductArea);
-      return; // Exit after fetching data
-    }
-
-    // If multiple prefixes and no prefix entered, prompt user
-    if (availablePrefixes.length > 1 && !prefix.trim()) {
-      setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
+  if (availablePrefixes.length > 1 && !prefix.trim()) {
+    console.log('Multiple prefixes available, but prefix not entered:', availablePrefixes);
+     setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
       prefixRef.current?.focus();
-      return; // Wait for user to enter prefix
-    }
+    return;
+  }
 
-    // If prefix is entered, fetch data
-    if (prefix.trim()) {
-      await fetchAndSetData(partNumber, prefix, selectedProductArea);
-    }
-  };
+  if (prefix.trim()) {
+    console.log('Using entered prefix:', prefix);
+    await fetchAndSetData(partNumber, prefix, selectedProductArea, showPusers);
+  }
+};
 
-  // Helper function to fetch and set data
-  const fetchAndSetData = async (partNumber, prefix, selectedProductArea) => {
-    const data = await getResponseFieldsData(partNumber, prefix);
-    setName(data.name);
-    setPartStageVersion(data.partStageVersion);
-    setBrandMark(data.brandMark);
+const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPusers) => {
+  console.log('Fetching response fields data for:', { partNumber, prefix });
+  const responseData = await getResponseFieldsData(partNumber, prefix);
+  console.log('Response data:', responseData);
 
-    const tabledata = await getGdaData(partNumber, prefix, selectedProductArea);
-    setTableData(tabledata);
-  };
+  setName(responseData.name);
+  setPartStageVersion(responseData.partStageVersion);
+  setBrandMark(responseData.brandMark);
 
+  console.log('Calling getGdaData with:', { partNumber, prefix, selectedProductArea, showPusers });
+  const tableData = await getGdaData(partNumber, prefix, selectedProductArea, showPusers);
+  console.log('Filtered table data:', tableData);
+  setTableData(tableData);
+};
   const handleClear = () => {
     setPartNumber('');
     setPrefix('');
@@ -152,6 +158,7 @@ export default function GdaLocalAction() {
     setTableData([]);
     setIsGotoDropdownOpen(false);
     setIsGotoEnabled(false);
+    setShowPusers(false);
     if (partNumberRef.current) partNumberRef.current.focus();
   };
 
@@ -352,7 +359,14 @@ export default function GdaLocalAction() {
         {/* show p-consumers */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label className='input-label' style={{ marginRight: '10px' }}>Show P-consumers:</label>
-          <input className='custom-checkbox' type='checkbox' ref={showPusersRef} onKeyDown={(e) => { handleTabNavigation(e, 'showPusers') }} />
+          <input
+  className='custom-checkbox'
+  type='checkbox'
+  ref={showPusersRef}
+  checked={showPusers}
+  onChange={(e) => setShowPusers(e.target.checked)}
+  onKeyDown={(e) => { handleTabNavigation(e, 'showPusers') }}
+/>
         </div>
 
         {/* message box */}
