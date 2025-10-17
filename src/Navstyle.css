@@ -1,6 +1,8 @@
+/* ORIGINAL STYLING - PRESERVED */
+
 /* side navbar style */
 .navbar-container {
-  width: 20%;
+  width: 20%; /* Changed from 20% to 15% */
   background-color: #1a2a6c;
   color: white;
   padding: 15px;
@@ -9,69 +11,94 @@
   flex-direction: column;
   align-items: flex-start;
   box-sizing: border-box;
-  position: sticky;
+  position: fixed; /* Fixed positioning to prevent scroll issues */
   top: 0;
-  height: 100vh; /* ✅ Add this so it always stretches full height */
+  left: 0;
+  height: 100vh;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto; /* Enable scrolling within navbar */
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
+/* Prevent white space flicker during scroll */
+.navbar-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #1a2a6c;
+  z-index: -1;
+}
 
 /* Subscreens display area */
 .subscreens-display {
   width: 100%;
-  flex-grow: 1; /* Allows it to take up available space */
-  overflow-y: auto; /* Adds scrollbar if subscreens overflow */
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Ensure consistent background */
+  background-color: transparent;
 }
 
 /* List of subscreens */
 .subscreens-list {
-  list-style: none; /* Remove bullet points */
+  list-style: none;
   padding: 0;
   margin: 0;
+  background-color: transparent;
 }
 
 /* Individual subscreen item */
 .subscreen-item {
   padding: 8px 5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Light border between items */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-weight: 500;
+  background-color: transparent;
 }
 
 .subscreen-item:last-child {
-  border-bottom: none; /* No border for the last item */
+  border-bottom: none;
 }
 
 .subscreen-item:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* Light hover effect */
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Message when no subscreens are selected */
 .no-subscreens-message {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7); /* Lighter white for informative text */
+  color: rgba(255, 255, 255, 0.7);
   text-align: center;
   padding-top: 20px;
+  background-color: transparent;
 }
 
-.logo{
+.logo {
   font-weight: 600;
-  font-size:24px;
+  font-size: 24px;
+  background-color: transparent;
 }
 
-.userid{
+.userid {
   font-weight: 500;
   font-size: 16px;
   margin: 10px 0px;
+  background-color: transparent;
 }
 
 /* Wrapper */
 .navbar-custom-dropdown {
   position: relative;
   display: inline-block;
-  width: 90%;  /* same as your old .navbar-dropdown */
+  width: 90%;
   margin-bottom: 20px;
+  background-color: transparent;
 }
 
 /* Button (trigger) */
@@ -86,8 +113,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;    /* 👈 pointer on trigger */
+  cursor: pointer;
   transition: background 0.3s ease;
+}
+
+.navbar-custom-button:hover {
+  background-color: #f8f9fa;
 }
 
 /* Arrow */
@@ -101,8 +132,8 @@
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;   /* 👈 fills full width of button */
-  z-index: 100;
+  right: 0;
+  z-index: 1001;
 }
 
 /* Options list */
@@ -113,22 +144,345 @@
   margin: 0;
   padding: 0;
   background: #fff;
-  /* border: 1px solid #ddd; */
-  /* border-radius: 6px; */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border-radius: 6px;
 }
 
 /* Option items */
 .navbar-custom-options li {
   padding: 8px;
   color: #333;
-  cursor: pointer; /* 👈 pointer on options */
+  cursor: pointer;
   font-size: 14px;
   font-weight: bold;
   border-bottom: 1px solid rgba(0,0,0,0.05);
+  background-color: #fff;
+}
+
+.navbar-custom-options li:first-child {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.navbar-custom-options li:last-child {
+  border-bottom: none;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 .navbar-custom-options li:hover {
   background: gray;
   color: #fff;
+}
+
+/* MOBILE RESPONSIVENESS - NEW ADDITIONS */
+
+/* Mobile hamburger button - hidden by default */
+.mobile-menu-button {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background: #1a2a6c;
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hamburger-line {
+  width: 20px;
+  height: 2px;
+  background: white;
+  transition: 0.3s;
+  border-radius: 1px;
+}
+
+/* Mobile close button - hidden by default */
+.mobile-close-button {
+  display: none;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  z-index: 1001;
+}
+
+/* Mobile overlay - hidden by default */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+
+/* Large desktop screens (1200px+) - keep original styling */
+@media (min-width: 1200px) {
+  .navbar-container {
+    width: 20%; /* Changed from 20% to 15% */
+    position: fixed;
+    transform: translateX(0);
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .userid {
+    font-size: 16px;
+  }
+  
+  .subscreen-item {
+    font-size: 14px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 14px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 14px;
+  }
+}
+
+/* Medium desktop screens (993px - 1199px) */
+@media (max-width: 1199px) and (min-width: 993px) {
+  .navbar-container {
+    width: 17%; /* Changed from 22% to 17% */
+    position: fixed;
+    transform: translateX(0);
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  .userid {
+    font-size: 15px;
+  }
+  
+  .subscreen-item {
+    font-size: 13px;
+    padding: 7px 5px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 13px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 13px;
+  }
+}
+
+/* MOBILE BEHAVIOR STARTS AT 992px */
+@media (max-width: 992px) {
+  /* Show hamburger button */
+  .mobile-menu-button {
+    display: flex;
+  }
+  
+  /* Hide navbar by default on mobile */
+  .navbar-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+  }
+  
+  /* Show navbar when mobile menu is open */
+  .navbar-mobile-open {
+    transform: translateX(0);
+  }
+  
+  /* Show close button */
+  .mobile-close-button {
+    display: block;
+  }
+  
+  /* Show overlay when menu is open */
+  .mobile-overlay {
+    display: block;
+  }
+  
+  /* Mobile navbar styling */
+  .logo {
+    font-size: 20px;
+  }
+  
+  .userid {
+    font-size: 14px;
+  }
+  
+  .subscreen-item {
+    font-size: 12px;
+    padding: 6px 5px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 12px;
+    padding: 6px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 12px;
+    padding: 6px;
+  }
+  
+  .navbar-custom-arrow {
+    font-size: 10px;
+  }
+}
+
+/* Tablet portrait (577px - 768px) */
+@media (max-width: 768px) and (min-width: 577px) {
+  .navbar-container {
+    width: 300px;
+  }
+  
+  .logo {
+    font-size: 22px;
+  }
+  
+  .userid {
+    font-size: 15px;
+  }
+  
+  .subscreen-item {
+    font-size: 13px;
+    padding: 8px 5px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 13px;
+    padding: 8px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
+
+/* Mobile landscape (481px - 576px) */
+@media (max-width: 576px) and (min-width: 481px) {
+  .navbar-container {
+    width: 320px;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .userid {
+    font-size: 16px;
+  }
+  
+  .subscreen-item {
+    font-size: 14px;
+    padding: 10px 5px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Mobile portrait (320px - 480px) */
+@media (max-width: 480px) {
+  .navbar-container {
+    width: 100%;
+  }
+  
+  .mobile-menu-button {
+    top: 15px;
+    left: 15px;
+  }
+  
+  .logo {
+    font-size: 26px;
+  }
+  
+  .userid {
+    font-size: 18px;
+  }
+  
+  .subscreen-item {
+    font-size: 15px;
+    padding: 12px 5px;
+  }
+  
+  .navbar-custom-button {
+    font-size: 15px;
+    padding: 12px;
+  }
+  
+  .navbar-custom-options li {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
+
+/* Keep navbar visible on larger screens */
+@media (min-width: 993px) {
+  .navbar-container {
+    transform: translateX(0);
+    position: fixed;
+  }
+  
+  .mobile-menu-button,
+  .mobile-close-button,
+  .mobile-overlay {
+    display: none;
+  }
+}
+
+/* Scrollbar styling for navbar */
+.navbar-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navbar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.navbar-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.navbar-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Firefox scrollbar */
+.navbar-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.3) transparent;
 }

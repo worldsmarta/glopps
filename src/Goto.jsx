@@ -23,19 +23,25 @@ export default function Goto({ isGotoEnabled, isGotoDropdownOpen, setIsGotoDropd
   return (
     <div className='goto-dropdown' onClick={(e) => { e.stopPropagation(); setIsGotoDropdownOpen((prev) => !prev); dropdownOpen(false) }}>
 
-      <div className="goto-button" style={{ width: isGotoEnabled ? "300px" : "100px" }}>
+      <div className="goto-button" style={{ width: isGotoEnabled ? "250px" : "100px" }}>
         <span>Go To</span>
         <span className="goto-arrow">▼</span>
       </div>
 
-      {isGotoDropdownOpen && (<div className="goto-options-container" style={{ width: isGotoEnabled ? "300px" : "100px" }}>
-        <ul className="goto-options">
-          {isGotoEnabled ? (GotoMenu.map((sub, index) => (<li key={index} onClick={() => { navigate(sub.path); setIsGotoDropdownOpen(false); }}>{sub.name} </li>)))
-           : (
-            <li>Go To:</li>
-          )}
-        </ul>
-      </div>
+      {isGotoDropdownOpen && (
+        <div className="goto-options-container" style={{ width: isGotoEnabled ? "250px" : "100px" }}>
+          <ul className="goto-options" style={{ width: isGotoEnabled ? "250px" : "100px" }}>
+            {isGotoEnabled ? (
+              GotoMenu.map((sub, index) => (
+                <li key={index} onClick={() => { navigate(sub.path); setIsGotoDropdownOpen(false); }}>
+                  {sub.name}
+                </li>
+              ))
+            ) : (
+              <li>Go To:</li>
+            )}
+          </ul>
+        </div>
       )}
     </div>
   );

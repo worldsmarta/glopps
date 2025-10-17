@@ -1,0 +1,384 @@
+/* HAZARDOUS JOB QUEUE SPECIFIC STYLES */
+
+/* Part ID error styling */
+.part-id-inputs {
+  position: relative;
+}
+
+.part-id-error {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+}
+
+/* Table styles */
+.hazardous-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 11px;
+}
+
+.hazardous-table th {
+  background-color: #1e4f91;
+  color: white;
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 11px;
+  border-right: 1px solid #144080;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.hazardous-table th:last-child {
+  border-right: none;
+}
+
+.hazardous-table td {
+  padding: 8px;
+  border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #f0f0f0;
+  font-size: 10px;
+  vertical-align: middle;
+}
+
+.hazardous-table td:last-child {
+  border-right: none;
+}
+
+.hazardous-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.hazardous-table tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+/* Checkbox and radio button styling */
+.table-checkbox,
+.table-radio {
+  margin: 0;
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+/* Sortable headers */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 20px;
+}
+
+.sortable-header:hover {
+  background-color: #163e73;
+}
+
+.sort-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Table container for scrolling */
+.table-scroll-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* Special styling for consumer dropdown which has longer text */
+.consumer-dropdown-options-compact {
+  /* Inherit width from input box - no special width */
+}
+
+/* RESPONSIVE DESIGN FOR COMPACT LAYOUT */
+
+/* Large desktop screens (1200px+) */
+@media (min-width: 1200px) {
+  .hazardous-table {
+    font-size: 11px;
+  }
+  
+  .hazardous-table th {
+    padding: 12px 10px;
+    font-size: 11px;
+  }
+  
+  .hazardous-table td {
+    padding: 10px;
+    font-size: 10px;
+  }
+  
+  .table-scroll-container {
+    max-height: 450px;
+  }
+}
+
+/* Medium desktop screens (993px - 1199px) */
+@media (max-width: 1199px) and (min-width: 993px) {
+  .consumer-dropdown-options-compact {
+    width: 280px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 250px;
+  }
+  
+  .hazardous-table {
+    font-size: 10px;
+  }
+  
+  .hazardous-table th {
+    padding: 10px 8px;
+    font-size: 10px;
+  }
+  
+  .hazardous-table td {
+    padding: 8px;
+    font-size: 9px;
+  }
+}
+
+/* Tablet and mobile responsive (992px and below) */
+@media (max-width: 992px) {
+  .consumer-dropdown-options-compact {
+    width: 240px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 200px;
+  }
+  
+  .hazardous-table {
+    font-size: 9px;
+  }
+  
+  .hazardous-table th {
+    padding: 8px 6px;
+    font-size: 9px;
+  }
+  
+  .hazardous-table td {
+    padding: 6px;
+    font-size: 8px;
+  }
+  
+  .table-scroll-container {
+    max-height: 350px;
+  }
+  
+  .sort-arrow {
+    font-size: 8px;
+    right: 4px;
+  }
+}
+
+/* Tablet portrait (577px - 768px) */
+@media (max-width: 768px) and (min-width: 577px) {
+  .consumer-dropdown-options-compact {
+    width: 200px;
+    right: 0;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 180px;
+  }
+  
+  .dropdown-options-compact li {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+  
+  .hazardous-table {
+    font-size: 8px;
+  }
+  
+  .hazardous-table th {
+    padding: 6px 4px;
+    font-size: 8px;
+  }
+  
+  .hazardous-table td {
+    padding: 4px;
+    font-size: 7px;
+  }
+  
+  .table-scroll-container {
+    max-height: 300px;
+  }
+  
+  .table-checkbox,
+  .table-radio {
+    transform: scale(0.9);
+  }
+}
+
+/* Mobile landscape (481px - 576px) */
+@media (max-width: 576px) and (min-width: 481px) {
+  .consumer-dropdown-options-compact {
+    width: 180px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 100px;
+  }
+  
+  .dropdown-options-compact li {
+    font-size: 8px;
+    padding: 3px 5px;
+  }
+  
+  .hazardous-table {
+    font-size: 7px;
+  }
+  
+  .hazardous-table th {
+    padding: 5px 3px;
+    font-size: 7px;
+  }
+  
+  .hazardous-table td {
+    padding: 3px;
+    font-size: 6px;
+  }
+  
+  .table-scroll-container {
+    max-height: 250px;
+  }
+  
+  .sortable-header {
+    padding-right: 15px;
+  }
+  
+  .sort-arrow {
+    font-size: 6px;
+    right: 3px;
+  }
+}
+
+/* Mobile portrait (320px - 480px) */
+@media (max-width: 480px) {
+  .consumer-dropdown-options-compact {
+    width: 100%;
+    right: auto;
+    left: 0;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 80px;
+  }
+  
+  .dropdown-options-compact li {
+    font-size: 7px;
+    padding: 2px 4px;
+  }
+  
+  .hazardous-table {
+    font-size: 6px;
+  }
+  
+  .hazardous-table th {
+    padding: 4px 2px;
+    font-size: 6px;
+  }
+  
+  .hazardous-table td {
+    padding: 2px;
+    font-size: 5px;
+  }
+  
+  .table-scroll-container {
+    max-height: 200px;
+  }
+  
+  .table-checkbox,
+  .table-radio {
+    transform: scale(0.8);
+  }
+  
+  .sortable-header {
+    padding-right: 12px;
+  }
+  
+  .sort-arrow {
+    font-size: 5px;
+    right: 2px;
+  }
+}
+
+/* Very small screens (below 320px) */
+@media (max-width: 319px) {
+  .consumer-dropdown-options-compact {
+    width: 100%;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 60px;
+  }
+  
+  .dropdown-options-compact li {
+    font-size: 6px;
+    padding: 1px 3px;
+  }
+  
+  .hazardous-table {
+    font-size: 5px;
+  }
+  
+  .hazardous-table th {
+    padding: 3px 1px;
+    font-size: 5px;
+  }
+  
+  .hazardous-table td {
+    padding: 1px;
+    font-size: 4px;
+  }
+  
+  .table-scroll-container {
+    max-height: 150px;
+  }
+  
+  .table-checkbox,
+  .table-radio {
+    transform: scale(0.7);
+  }
+  
+  .sortable-header {
+    padding-right: 10px;
+  }
+  
+  .sort-arrow {
+    font-size: 4px;
+    right: 1px;
+  }
+}
+
+/* Horizontal scrolling for very small screens */
+@media (max-width: 576px) {
+  .table-scroll-container {
+    overflow-x: auto;
+  }
+  
+  .hazardous-table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hazardous-table {
+    min-width: 500px;
+  }
+}
+
+@media (max-width: 320px) {
+  .hazardous-table {
+    min-width: 400px;
+  }
+}

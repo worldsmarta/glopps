@@ -1,5 +1,6 @@
 
 import Home from './Home';
+import HazardousJobQueue from './mdm/HazardousJobQueue/HazardousJobQueue';
 import LogisticsConsumer from './mdm/LogisticsConsumer/LogisticsConsumer';
 
 import WarehouseBuiltPart from './mdm/WarehouseBuiltPart/WarehouseBuiltPart';
@@ -30,7 +31,9 @@ export const screens = {
     { name: "MDM WM Part", path: "/mdm/wmParts",component:WMPart },
     { name: "Warehouse Built Part", path: "/mdm/warehouseBuiltPart",component:WarehouseBuiltPart },
     { name: "MDM Logistics Consumer", path: "/mdm/logisticsConsumer",component:LogisticsConsumer },
-  
+
+    { name: "Hazardous Job Queue", path: "/mdm/hazardousJobQueue",component:HazardousJobQueue},
+
 
   ],
   General:  [

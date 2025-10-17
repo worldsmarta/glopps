@@ -1,24 +1,30 @@
-/* Table */
+/* Table - unified compact styling */
 .table {
   width: 100%; 
   border-collapse: separate;  
   border-spacing: 0;           
   background: #fff;
-  font-size: 14px;
+  font-size: 12px; /* Smaller font for compact layout */
   border: 1px solid #dcdcdc;
   overflow: hidden;  
   margin-top: 0;        
+  border-radius: 6px; /* Smaller radius for consistency */
 }
 
-/* Header of table*/
+/* Header of table - more compact */
 .table th {
   background: #1e4f91;        
   color: #fff;
   text-align: left;
-  padding: 10px 0px;
+  padding: 8px 6px; /* More compact padding */
   font-weight: 600;
   text-decoration: none;
+  font-size: 11px; /* Smaller header font */
+}
 
+/* First header cell padding adjustment */
+.table th:first-child {
+  padding-left: 12px;
 }
 
 /* Make only header sticky */
@@ -28,13 +34,19 @@
   z-index: 2;
 }
 
-
-/* rows of table */
+/* Rows of table - more compact */
 .table td {
-  padding: 6px 0px;
+  padding: 4px 6px; /* More compact padding */
   border-bottom: 1px solid #e0e0e0;
   color: #333;
   font-weight: 500;
+  font-size: 11px; /* Smaller cell font */
+  line-height: 1.3; /* Better line height for readability */
+}
+
+/* First cell padding adjustment */
+.table td:first-child {
+  padding-left: 12px;
 }
 
 /* Remove last border to match radius */
@@ -42,27 +54,27 @@
   border-bottom: none;
 }
 
-/* Section Label (Logistics Consumers to Add) */
+/* Section Label (for rows like "Logistics Consumers to Add") */
 .section-label {
   background: #f3f3f3;
   color: #444;
 }
 
 .section-label td {
-  padding: 10px 12px;
+  padding: 8px 12px; /* Slightly more padding for section headers */
+  font-weight: bold;
+  font-size: 12px; /* Slightly larger for section headers */
 }
-
 
 /* Center checkboxes/radios */
 .center {
   text-align: center;
 }
 
-
-/* radio button and checkbox */
-input[type="checkbox"],input[type="radio"] {
-  width: 18px;
-  height: 18px;
+/* Radio button and checkbox - more compact */
+input[type="checkbox"], input[type="radio"] {
+  width: 14px; /* Smaller size for compact layout */
+  height: 14px;
   cursor: pointer;
   appearance: none;
   border: 2px solid #bbb;
@@ -76,8 +88,8 @@ input[type="radio"] {
   border-radius: 50%;
 }
 
-input[type="checkbox"]{
-    border-radius: 4px;
+input[type="checkbox"] {
+  border-radius: 3px; /* Smaller radius */
 }
 
 /* Hover for checkbox and radio */
@@ -93,27 +105,104 @@ input[type="radio"]:checked {
   border: 2px solid #1e4f91;
 }
 
-/* Blue tick for checkbox */
+/* Blue tick for checkbox - adjusted for smaller size */
 input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
-  left: 4px;
+  left: 3px; /* Adjusted for smaller checkbox */
   top: 0px;
-  width: 5px;
-  height: 10px;
-  border: solid #1e4f91;  /* Blue tick */
+  width: 4px; /* Smaller tick */
+  height: 8px;
+  border: solid #1e4f91;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-/* Blue inner dot for radio */
+/* Blue inner dot for radio - adjusted for smaller size */
 input[type="radio"]:checked::after {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 6px;
-  height: 6px;
+  top: 3px; /* Adjusted for smaller radio */
+  left: 3px;
+  width: 4px; /* Smaller dot */
+  height: 4px;
   border-radius: 50%;
-  background: #1e4f91;  /* Blue inner circle */
+  background: #1e4f91;
+}
+
+/* Table container for scrolling */
+.table-container {
+  width: 100%;
+  max-height: 350px; /* Slightly smaller max height */
+  overflow-y: auto;
+  border-radius: 6px; /* Match table radius */
+  border: 1px solid #dcdcdc;
+}
+
+/* Scrollbar styling for table container */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox scrollbar */
+.table-container {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 1200px) {
+  .table {
+    font-size: 11px;
+  }
+  
+  .table th, .table td {
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 10px;
+  }
+  
+  .table th, .table td {
+    padding: 4px 2px;
+  }
+  
+  .table-container {
+    max-height: 250px;
+  }
+  
+  input[type="checkbox"], input[type="radio"] {
+    width: 12px;
+    height: 12px;
+  }
+  
+  input[type="checkbox"]:checked::after {
+    left: 2px;
+    width: 3px;
+    height: 6px;
+  }
+  
+  input[type="radio"]:checked::after {
+    top: 2px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+  }
 }

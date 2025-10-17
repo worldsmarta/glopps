@@ -85,7 +85,7 @@ export function getGdaData(partNumber, prefix, productArea, showPusers) {
 
     // If productArea is empty, return all data
     const filteredByArea = !productArea? dt: abbr ? dt.filter(item => item.prodarea === abbr): dt.filter(item => item.prodarea === productArea);
-
+    console.log(filteredByArea);
     // Filter based on showPusers
     //showPusers is not checked and productArea is blank: display all rows except type P
     //showPusers is checked and productArea is blank: display all rows along with type P

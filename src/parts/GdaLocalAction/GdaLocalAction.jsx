@@ -52,6 +52,7 @@ export default function GdaLocalAction() {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.productarea-dropdown')) {
         setIsDropdownOpen(false);
+        setIsGotoDropdownOpen(false);
       }
     };
     document.addEventListener('click', handleClickOutside);
@@ -89,62 +90,62 @@ export default function GdaLocalAction() {
     }
   };
 
-const handleSearch = async () => {
-   setErrorMessage(''); // Clear previous errors at the start
+  const handleSearch = async () => {
+    setErrorMessage(''); // Clear previous errors at the start
     setIsGotoEnabled(true);
-  console.log('Starting handleSearch with:', {
-    partNumber,
-    prefix,
-    selectedProductArea,
-    showPusers
-  });
+    console.log('Starting handleSearch with:', {
+      partNumber,
+      prefix,
+      selectedProductArea,
+      showPusers
+    });
 
-  // Get available prefixes
-  const availablePrefixes = getAvailablePrefixes(partNumber);
-  console.log('Available prefixes:', availablePrefixes);
+    // Get available prefixes
+    const availablePrefixes = getAvailablePrefixes(partNumber);
+    console.log('Available prefixes:', availablePrefixes);
 
-  if (availablePrefixes.length === 0) {
-    console.log('No prefixes found for partNumber:', partNumber);
-    setErrorMessage('PART ID MISSING IN GLOPPS');
+    if (availablePrefixes.length === 0) {
+      console.log('No prefixes found for partNumber:', partNumber);
+      setErrorMessage('PART ID MISSING IN GLOPPS');
       partNumberRef.current?.focus();
-      
-    return;
-  }
 
-  if (availablePrefixes.length === 1) {
-    setPrefix(availablePrefixes[0]);
-    console.log('Single prefix:', availablePrefixes[0]);
-    await fetchAndSetData(partNumber, availablePrefixes[0], selectedProductArea, showPusers);
-    return;
-  }
+      return;
+    }
 
-  if (availablePrefixes.length > 1 && !prefix.trim()) {
-    console.log('Multiple prefixes available, but prefix not entered:', availablePrefixes);
-     setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
+    if (availablePrefixes.length === 1) {
+      setPrefix(availablePrefixes[0]);
+      console.log('Single prefix:', availablePrefixes[0]);
+      await fetchAndSetData(partNumber, availablePrefixes[0], selectedProductArea, showPusers);
+      return;
+    }
+
+    if (availablePrefixes.length > 1 && !prefix.trim()) {
+      console.log('Multiple prefixes available, but prefix not entered:', availablePrefixes);
+      setErrorMessage(`PART PREFIX: ${availablePrefixes.join(' ')}`);
       prefixRef.current?.focus();
-    return;
-  }
+      return;
+    }
 
-  if (prefix.trim()) {
-    console.log('Using entered prefix:', prefix);
-    await fetchAndSetData(partNumber, prefix, selectedProductArea, showPusers);
-  }
-};
+    if (prefix.trim()) {
+      console.log('Using entered prefix:', prefix);
+      await fetchAndSetData(partNumber, prefix, selectedProductArea, showPusers);
+    }
+  };
 
-const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPusers) => {
-  console.log('Fetching response fields data for:', { partNumber, prefix });
-  const responseData = await getResponseFieldsData(partNumber, prefix);
-  console.log('Response data:', responseData);
+  const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPusers) => {
+    console.log('Fetching response fields data for:', { partNumber, prefix });
+    const responseData = await getResponseFieldsData(partNumber, prefix);
+    console.log('Response data:', responseData);
 
-  setName(responseData.name);
-  setPartStageVersion(responseData.partStageVersion);
-  setBrandMark(responseData.brandMark);
+    setName(responseData.name);
+    setPartStageVersion(responseData.partStageVersion);
+    setBrandMark(responseData.brandMark);
 
-  console.log('Calling getGdaData with:', { partNumber, prefix, selectedProductArea, showPusers });
-  const tableData = await getGdaData(partNumber, prefix, selectedProductArea, showPusers);
-  console.log('Filtered table data:', tableData);
-  setTableData(tableData);
-};
+    console.log('Calling getGdaData with:', { partNumber, prefix, selectedProductArea, showPusers });
+    const tableData = await getGdaData(partNumber, prefix, selectedProductArea, showPusers);
+    console.log('Filtered table data:', tableData);
+    setTableData(tableData);
+  };
   const handleClear = () => {
     setPartNumber('');
     setPrefix('');
@@ -326,19 +327,25 @@ const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPuse
         <div>
           <label className='input-label'>Part Id: <span style={{ color: 'red' }}>*</span>
           </label>
-          <input type='text' className='input-field' ref={partNumberRef} value={partNumber} onChange={(e) => setPartNumber(e.target.value)}
+          <div>
+             <input type='text' className='input-field' ref={partNumberRef} value={partNumber} onChange={(e) => setPartNumber(e.target.value)}
             onKeyDown={(e) => { handleTabNavigation(e, 'partNumber'); handleEnterKey(e); }} />
           <input type='text' className='input-field' style={{ width: '50px', marginLeft: '10px' }} ref={prefixRef} value={prefix}
             onChange={(e) => setPrefix(e.target.value)} onKeyDown={(e) => { handleTabNavigation(e, 'prefix'); handleEnterKey(e); }} />
+          </div>
+         
         </div>
 
         {/* product area */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label className='input-label'>Product Area : </label>
-          <div style={{ display: 'flex', position: 'relative', width: '200px', marginLeft: '10px' }}>
+          <div style={{  position: 'relative', width: '200px', marginLeft: '10px' }}>
             <div className='productarea-dropdown' tabIndex={0} onClick={() => { setIsDropdownOpen(!isDropdownOpen), setIsGotoDropdownOpen(false) }}
               ref={productAreaRef} onKeyDown={(e) => { handleTabNavigation(e, 'productArea') }} >
-              <div className='selected' style={{ fontSize: '13px', fontWeight: 'bold' }}onKeyDown={(e)=>{handleEnterKey(e)}} tabIndex={0} ref={productAreaRef} >{selectedProductArea || ''}</div>
+              <div className='selected' style={{ fontSize: '13px', fontWeight: 'bold' }} tabIndex={0} ref={el => { productAreaRef.current = el; }}
+                onKeyDown={(e) => { handleEnterKey(e); }} onClick={() => { if (productAreaRef.current) productAreaRef.current.focus(); }}>
+                {selectedProductArea || ''}
+              </div>
               <span className='dropdown-arrow'>&#9660;</span>
             </div>
 
@@ -359,13 +366,13 @@ const fetchAndSetData = async (partNumber, prefix, selectedProductArea, showPuse
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label className='input-label' style={{ marginRight: '10px' }}>Show P-consumers:</label>
           <input
-  className='custom-checkbox'
-  type='checkbox'
-  ref={showPusersRef}
-  checked={showPusers}
-  onChange={(e) => setShowPusers(e.target.checked)}
-  onKeyDown={(e) => { handleTabNavigation(e, 'showPusers'); handleEnterKey(e); }}
-/>
+            className='custom-checkbox'
+            type='checkbox'
+            ref={showPusersRef}
+            checked={showPusers}
+            onChange={(e) => setShowPusers(e.target.checked)}
+            onKeyDown={(e) => { handleTabNavigation(e, 'showPusers'); handleEnterKey(e); }}
+          />
         </div>
 
         {/* message box */}

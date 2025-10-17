@@ -49,7 +49,7 @@ export default function GdaLocalActionTable({
                     {data.filter(row => row.IntroDate !== '' && row.userid !== '' && row.chgdte !== '').map(row => (
                         <tr key={row.id}>
                             <td className="center">
-                                <input type="radio" checked={selectedRadio === row.id} onChange={() => onRadioChange(row.id)} />
+                                {row.type !== 'P' && ( <input type="radio" checked={selectedRadio === row.id} onChange={() => onRadioChange(row.id)}/> )}
                             </td>
                             <td title={fullProductAreaName(row.prodarea)}>{row.prodarea}</td> <td>{row.gda}</td><td>{row.designation}</td> <td>{row.consumer}</td> 
                             <td>{row.comp}</td><td>{row.lda}</td><td>{row.IntroDate}</td>
