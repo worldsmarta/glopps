@@ -118,12 +118,16 @@
   .table-scroll-container {
     max-height: 450px;
   }
+
+  .dropdown-options-compact {
+    max-height: 400px;
+  }
 }
 
 /* Medium desktop screens (993px - 1199px) */
 @media (max-width: 1199px) and (min-width: 993px) {
   .consumer-dropdown-options-compact {
-    width: 280px;
+    /* width: 280px; */
   }
   
   .dropdown-options-compact {
@@ -148,7 +152,7 @@
 /* Tablet and mobile responsive (992px and below) */
 @media (max-width: 992px) {
   .consumer-dropdown-options-compact {
-    width: 240px;
+    /* width: 240px; */
   }
   
   .dropdown-options-compact {
@@ -182,7 +186,7 @@
 /* Tablet portrait (577px - 768px) */
 @media (max-width: 768px) and (min-width: 577px) {
   .consumer-dropdown-options-compact {
-    width: 200px;
+    /* width: 200px; */
     right: 0;
   }
   
@@ -222,7 +226,7 @@
 /* Mobile landscape (481px - 576px) */
 @media (max-width: 576px) and (min-width: 481px) {
   .consumer-dropdown-options-compact {
-    width: 180px;
+    /* width: 180px; */
   }
   
   .dropdown-options-compact {
