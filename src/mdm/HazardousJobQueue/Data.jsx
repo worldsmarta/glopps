@@ -22,11 +22,24 @@ export const hazardousJobDatabase = {
                 psuNumber: '70912'
             }
         ]
+    },
+    '4130002724|VO': {
+        data: [
+            {
+                id: '1',
+                partId: 'VO 4130002724',
+                description: 'WET BATTERY',
+                dangerousCode: '3',
+                introDate: '20190709',
+                jobDate: '20190709',
+                psuNumber: '70'
+            }
+        ]
     }
 };
 
-// Component options based on the image
-export function getComponentOptions() {
+// Company options based on the image
+export function getCompanyOptions() {
     return [
         '',
         '01 - Volvo Construction Equipment',
@@ -68,31 +81,12 @@ export function getAvailablePrefixes(partNumber) {
     return prefixes;
 }
 
-export function getHazardousJobData(partNumber, prefix, productArea, component, consumer) {
+export function getHazardousJobData(partNumber, prefix) {
     const key = `${partNumber}|${prefix}`;
     return new Promise((resolve) => {
         let data = hazardousJobDatabase[key]?.data || [];
         
-        // Apply filters if needed
-        if (productArea) {
-            data = data.filter(item => {
-                // Since we don't have product area in the data structure, 
-                // we'll return all data for now
-                return true;
-            });
-        }
-        if (component) {
-            data = data.filter(item => {
-                // Filter by component if needed
-                return true;
-            });
-        }
-        if (consumer) {
-            data = data.filter(item => {
-                // Filter by consumer if needed
-                return true;
-            });
-        }
+       
         
         setTimeout(() => resolve(data), 300);
     });
