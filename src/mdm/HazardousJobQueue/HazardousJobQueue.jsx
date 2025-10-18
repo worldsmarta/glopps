@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import '../../App.css';
-import { productArea, getAvailablePrefixes, getHazardousJobData, getComponentOptions, getConsumerOptions } from './Data';
+import { productArea, getAvailablePrefixes, getHazardousJobData, getCompanyOptions, getConsumerOptions } from './Data';
 import './HazardousJobQueue.css';
 import HazardousJobQueueTable from './HazardousJobQueueTable';
 import Goto from '../../Goto';
@@ -22,13 +22,13 @@ export default function HazardousJobQueue() {
   const [sortDirection, setSortDirection] = useState('asc');
 
   const productAreaRef = useRef(null);
-  const componentRef = useRef(null);
+  const companyRef = useRef(null);
   const consumerRef = useRef(null);
   const [isProductAreaDropdownOpen, setIsProductAreaDropdownOpen] = useState(false);
-  const [isComponentDropdownOpen, setIsComponentDropdownOpen] = useState(false);
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
   const [isConsumerDropdownOpen, setIsConsumerDropdownOpen] = useState(false);
   const [selectedProductArea, setSelectedProductArea] = useState('');
-  const [selectedComponent, setSelectedComponent] = useState('');
+  const [selectedCompany, setSelectedCompany] = useState('');
   const [selectedConsumer, setSelectedConsumer] = useState('');
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function HazardousJobQueue() {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.dropdown-container-compact')) {
         setIsProductAreaDropdownOpen(false);
-        setIsComponentDropdownOpen(false);
+        setIsCompanyDropdownOpen(false);
         setIsConsumerDropdownOpen(false);
         setIsGotoDropdownOpen(false);
       }
@@ -67,9 +67,9 @@ export default function HazardousJobQueue() {
     setIsProductAreaDropdownOpen(false);
   };
 
-  const handleComponentSelect = (component) => {
-    setSelectedComponent(component);
-    setIsComponentDropdownOpen(false);
+  const handleCompanySelect = (company) => {
+    setSelectedCompany(company);
+    setIsCompanyDropdownOpen(false);
   };
 
   const handleConsumerSelect = (consumer) => {
@@ -85,8 +85,8 @@ export default function HazardousJobQueue() {
       } else if (current === 'prefix') {
         productAreaRef.current?.focus();
       } else if (current === 'productArea') {
-        componentRef.current?.focus();
-      } else if (current === 'component') {
+        companyRef.current?.focus();
+      } else if (current === 'company') {
         consumerRef.current?.focus();
       } else if (current === 'consumer') {
         if (partNumberRef.current) partNumberRef.current.focus();
@@ -132,7 +132,7 @@ export default function HazardousJobQueue() {
       return;
     }
 
-    const tableData = await getHazardousJobData(partNumber, currentPrefix, selectedProductArea, selectedComponent, selectedConsumer);
+    const tableData = await getHazardousJobData(partNumber, currentPrefix, selectedProductArea, selectedCompany, selectedConsumer);
     setTableData(tableData);
   };
 
@@ -140,7 +140,7 @@ export default function HazardousJobQueue() {
     setPartNumber('');
     setPrefix('');
     setSelectedProductArea('');
-    setSelectedComponent('');
+    setSelectedCompany('');
     setSelectedConsumer('');
     setErrorMessage('');
     setSelectedCheckboxes([]);
@@ -194,49 +194,37 @@ export default function HazardousJobQueue() {
   };
 
   const productAreaOptions = Object.values(productArea);
-  const componentOptions = getComponentOptions();
+  const companyOptions = getCompanyOptions();
   const consumerOptions = getConsumerOptions();
 
   return (
-    <div className="screen-container-compact">
+    <div className="screen-container">
       {/* Header */}
       <div className="screen-header-row">
-        <button className='button-compact' onClick={handleClear}>Clear</button>
-        <p className='screen-title-compact'>Hazardous Job Queue</p>
-        <button className='button-compact'>User Manual</button>
+        <button className='button' onClick={handleClear}>Clear</button>
+        <p className='screen-title'>Hazardous Job Queue</p>
+        <button className='button'>User Manual</button>
       </div>
 
       {/* Form Row 1: Part ID and Product Area */}
-      <div className="screen-form-row-compact">
-        <div className="field-container-medium">
-          <label className='input-label-compact'>Part Id: <span style={{ color: 'red' }}>*</span></label>
+      <div className="screen-form-row">
+        <div className="field-container-large">
+          <label className='label'>Part Id: <span style={{ color: 'red', fontSize: '14px'}}>*</span></label>
           <div className="part-id-inputs">
-            <input 
-              type='text' 
-              className='input-field-compact' 
-              ref={partNumberRef} 
-              value={partNumber} 
-              onChange={(e) => setPartNumber(e.target.value)}
-              onKeyDown={(e) => { handleTabNavigation(e, 'partNumber'); handleEnterKey(e); }} 
-            />
-            <input 
-              type='text' 
-              className='input-field-compact prefix-input' 
-              ref={prefixRef} 
-              value={prefix} 
-              onChange={(e) => setPrefix(e.target.value.toUpperCase())}
-              onKeyDown={(e) => { handleTabNavigation(e, 'prefix'); handleEnterKey(e); }} 
-            />
+            <input  type='text' className='input-field-compact' ref={partNumberRef}  value={partNumber}  onChange={(e) => setPartNumber(e.target.value)}
+              onKeyDown={(e) => { handleTabNavigation(e, 'partNumber'); handleEnterKey(e); }} />
+            <input  type='text' className='input-field-compact prefix-input' ref={prefixRef}  value={prefix}  onChange={(e) => setPrefix(e.target.value.toUpperCase())}
+              onKeyDown={(e) => { handleTabNavigation(e, 'prefix'); handleEnterKey(e); }}  />
           </div>
         </div>
 
         <div className="field-container-large">
-          <label className='input-label-compact'>Prod. Area:</label>
+          <label className='label'>Prod. Area:</label>
           <div className='dropdown-container-compact'>
             <div 
-              className='productarea-dropdown-compact' 
+              className='dropdown dropdown-medium' 
               tabIndex={0} 
-              onClick={() => { setIsProductAreaDropdownOpen(!isProductAreaDropdownOpen); setIsComponentDropdownOpen(false); setIsConsumerDropdownOpen(false); setIsGotoDropdownOpen(false); }}
+              onClick={() => { setIsProductAreaDropdownOpen(!isProductAreaDropdownOpen); setIsCompanyDropdownOpen(false); setIsConsumerDropdownOpen(false); setIsGotoDropdownOpen(false); }}
               ref={productAreaRef} 
               onKeyDown={(e) => { handleTabNavigation(e, 'productArea'); handleEnterKey(e); }}
             >
@@ -247,7 +235,7 @@ export default function HazardousJobQueue() {
             </div>
 
             {isProductAreaDropdownOpen && (
-              <ul className='dropdown-options-compact'>
+              <ul className='dropdown-options-no-scroll'>
                 {productAreaOptions.map((area, index) => (
                   <li key={index} onClick={() => handleProductAreaSelect(area)}>
                     {area || '\u00A0'}
@@ -265,28 +253,28 @@ export default function HazardousJobQueue() {
         </div>
       </div>
 
-      {/* Form Row 2: Component and Consumer */}
-      <div className="screen-form-row-compact">
+      {/* Form Row 2: Company and Consumer */}
+      <div className="screen-form-row">
         <div className="field-container-large">
-          <label className='input-label-compact'>Comp:</label>
+          <label className='label'>Company:</label>
           <div className='dropdown-container-compact'>
             <div 
-              className='productarea-dropdown-compact' 
+              className='dropdown dropdown-medium' 
               tabIndex={0} 
-              onClick={() => { setIsComponentDropdownOpen(!isComponentDropdownOpen); setIsProductAreaDropdownOpen(false); setIsConsumerDropdownOpen(false); setIsGotoDropdownOpen(false); }}
-              ref={componentRef} 
-              onKeyDown={(e) => { handleTabNavigation(e, 'component'); handleEnterKey(e); }}
+              onClick={() => { setIsCompanyDropdownOpen(!isCompanyDropdownOpen); setIsProductAreaDropdownOpen(false); setIsConsumerDropdownOpen(false); setIsGotoDropdownOpen(false); }}
+              ref={companyRef} 
+              onKeyDown={(e) => { handleTabNavigation(e, 'company'); handleEnterKey(e); }}
             >
               <div className='selected-compact'>
-                {selectedComponent || ''}
+                {selectedCompany || ''}
               </div>
               <span className='dropdown-arrow-compact'>&#9660;</span>
             </div>
 
-            {isComponentDropdownOpen && (
-              <ul className='dropdown-options-compact'>
-                {componentOptions.map((comp, index) => (
-                  <li key={index} onClick={() => handleComponentSelect(comp)}>
+            {isCompanyDropdownOpen && (
+              <ul className='dropdown-options-no-scroll'>
+                {companyOptions.map((comp, index) => (
+                  <li key={index} onClick={() => handleCompanySelect(comp)}>
                     {comp || '\u00A0'}
                   </li>
                 ))}
@@ -296,12 +284,12 @@ export default function HazardousJobQueue() {
         </div>
 
         <div className="field-container-xl">
-          <label className='input-label-compact'>Consumer:</label>
+          <label className='label'>Consumer:</label>
           <div className='dropdown-container-compact'>
             <div 
-              className='productarea-dropdown-compact' 
+              className='dropdown dropdown-large' 
               tabIndex={0} 
-              onClick={() => { setIsConsumerDropdownOpen(!isConsumerDropdownOpen); setIsProductAreaDropdownOpen(false); setIsComponentDropdownOpen(false); setIsGotoDropdownOpen(false); }}
+              onClick={() => { setIsConsumerDropdownOpen(!isConsumerDropdownOpen); setIsProductAreaDropdownOpen(false); setIsCompanyDropdownOpen(false); setIsGotoDropdownOpen(false); }}
               ref={consumerRef} 
               onKeyDown={(e) => { handleTabNavigation(e, 'consumer'); handleEnterKey(e); }}
             >
@@ -312,7 +300,7 @@ export default function HazardousJobQueue() {
             </div>
 
             {isConsumerDropdownOpen && (
-              <ul className='dropdown-options-compact consumer-dropdown-options-compact'>
+              <ul className='dropdown-options-scrollable'>
                 {consumerOptions.map((consumer, index) => (
                   <li key={index} onClick={() => handleConsumerSelect(consumer)}>
                     {consumer || '\u00A0'}
@@ -327,8 +315,8 @@ export default function HazardousJobQueue() {
       {/* Buttons Row */}
       <div className="screen-buttons-row">
         <div className="screen-buttons-left">
-          <button className='button-compact' onClick={handleSearch}>Search</button>
-          <button className='button-compact' disabled={selectedCheckboxes.length === 0}>Non Dangerous part</button>
+          <button className='button' onClick={handleSearch}>Search</button>
+          <button className='button' disabled={selectedCheckboxes.length === 0}>Non Dangerous part</button>
         </div>
 
         <div className="goto-container">
@@ -336,7 +324,7 @@ export default function HazardousJobQueue() {
             isGotoEnabled={isGotoEnabled} 
             isGotoDropdownOpen={isGotoDropdownOpen} 
             setIsGotoDropdownOpen={setIsGotoDropdownOpen}
-            dropdownOpen={() => {setIsProductAreaDropdownOpen(false); setIsComponentDropdownOpen(false); setIsConsumerDropdownOpen(false);}} 
+            dropdownOpen={() => {setIsProductAreaDropdownOpen(false); setIsCompanyDropdownOpen(false); setIsConsumerDropdownOpen(false);}} 
             mode="exclude" 
             items={['Hazardous Job Queue']} 
           />
