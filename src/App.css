@@ -38,16 +38,6 @@ html {
   background: white;
   border-radius: 8px;
   /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
-  padding: 20px;
-  margin: 0;
-  min-height: 100vh;
-  position: relative;
-}
-
-.screen-container-compact {
-  background: white;
-  border-radius: 8px;
-  /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
   padding: 15px;
   margin: 0;
   min-height: 100vh;
@@ -70,15 +60,6 @@ html {
 }
 
 .screen-title {
-  font-size: 28px;
-  font-weight: bold;
-  color: #1e4f91;
-  margin: 0;
-  text-align: center;
-  flex: 1;
-}
-
-.screen-title-compact {
   font-size: 24px;
   font-weight: bold;
   color: #1e4f91;
@@ -89,13 +70,6 @@ html {
 
 /* FORM LAYOUTS */
 .screen-form-row {
-  display: flex;
-  gap: 30px;
-  margin-bottom: 30px;
-  align-items: flex-end;
-}
-
-.screen-form-row-compact {
   display: flex;
   gap: 30px;
   margin-bottom: 20px;
@@ -150,25 +124,12 @@ html {
 }
 
 .prefix-input {
-  width: 60px !important;
+  width: 50px !important;
   flex-shrink: 0;
 }
 
 /* BUTTONS */
 .button {
-  background-color: #1e4f91;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  min-height: 40px;
-  transition: background-color 0.3s ease;
-}
-
-.button-compact {
   background-color: #1e4f91;
   color: white;
   border: none;
@@ -181,13 +142,11 @@ html {
   transition: background-color 0.3s ease;
 }
 
-.button:hover,
-.button-compact:hover {
+.button:hover {
   background-color: #163e73;
 }
 
-.button:disabled,
-.button-compact:disabled {
+.button:disabled {
   background-color: #d3d3d3;
   color: #6a6a6a;
   cursor: not-allowed;
@@ -243,14 +202,7 @@ html {
 }
 
 /* LABELS */
-.input-label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #333;
-  font-size: 14px;
-}
-
-.input-label-compact {
+.label {
   font-weight: 600;
   margin-bottom: 4px;
   color: #333;
@@ -268,6 +220,50 @@ html {
   width: 100%;
 }
 
+/* Base Dropdown */
+.dropdown {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 34px;
+  font-size: 12px;
+  width: 100%;
+}
+
+.dropdown:focus {
+  outline: none;
+  border-color: #e53935;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+}
+
+/* Size Variants */
+.dropdown-small {
+  min-width: 120px;
+  padding: 4px 8px;
+  font-size: 11px;
+  min-height: 30px;
+}
+
+.dropdown-medium {
+  min-width: 180px;
+  padding: 6px 10px;
+  font-size: 12px;
+  min-height: 34px;
+}
+
+.dropdown-large {
+  min-width: 260px;
+  padding: 8px 12px;
+  font-size: 13px;
+  min-height: 36px;
+}
+
+/* Legacy classes for backward compatibility */
 .productarea-dropdown {
   background: white;
   border: 1px solid #ccc;
@@ -362,8 +358,42 @@ html {
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* Dropdown options with scrollable and non-scrollable variants */
+.dropdown-options-scrollable {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.dropdown-options-no-scroll {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  max-height: none !important;
+  overflow: visible !important;
+  height: auto;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
 .dropdown-options li,
-.dropdown-options-compact li {
+.dropdown-options-compact li,
+.dropdown-options-scrollable li,
+.dropdown-options-no-scroll li {
   padding: 10px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
@@ -374,12 +404,16 @@ html {
 }
 
 .dropdown-options li:hover,
-.dropdown-options-compact li:hover {
+.dropdown-options-compact li:hover,
+.dropdown-options-scrollable li:hover,
+.dropdown-options-no-scroll li:hover {
   background-color: #f5f5f5;
 }
 
 .dropdown-options li:last-child,
-.dropdown-options-compact li:last-child {
+.dropdown-options-compact li:last-child,
+.dropdown-options-scrollable li:last-child,
+.dropdown-options-no-scroll li:last-child {
   border-bottom: none;
 }
 
@@ -469,9 +503,16 @@ html {
     right: 0;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
+  }
+  
+  .dropdown-options-scrollable {
+    max-height: 200px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 200px;
   }
 }
 
@@ -488,8 +529,7 @@ html {
     right: 0;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
   }
   
@@ -511,6 +551,14 @@ html {
   
   .message-box, .message-box-compact {
     width: 280px;
+  }
+  
+  .dropdown-options-scrollable {
+    max-height: 160px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 160px;
   }
 }
 
@@ -534,8 +582,7 @@ html {
     overflow-y: auto;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
     min-height: auto;
   }
@@ -560,7 +607,7 @@ html {
     width: 250px;
   }
   
-  .screen-form-row-compact {
+  .screen-form-row {
     gap: 8px;
   }
   
@@ -570,6 +617,14 @@ html {
   
   .prefix-input {
     width: 50px !important;
+  }
+  
+  .dropdown-options-scrollable {
+    max-height: 140px;
+  }
+  
+  .dropdown-options-compact {
+    max-height: 140px;
   }
 }
 
@@ -584,8 +639,7 @@ html {
     position: static;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
     padding: 12px;
     min-height: auto;
@@ -597,7 +651,7 @@ html {
     position: static;
   }
   
-  .screen-title-compact {
+  .screen-title {
     font-size: 20px;
   }
   
@@ -628,7 +682,7 @@ html {
     font-size: 9px;
   }
   
-  .screen-form-row-compact {
+  .screen-form-row {
     gap: 6px;
     margin-bottom: 8px;
   }
@@ -643,7 +697,7 @@ html {
     gap: 8px;
   }
   
-  .button-compact {
+  .button {
     padding: 6px 12px;
     font-size: 11px;
     min-height: 30px;
@@ -655,15 +709,29 @@ html {
     min-height: 30px;
   }
   
-  .input-label-compact {
+  .label {
     font-size: 11px;
     margin-bottom: 3px;
   }
   
+  .dropdown,
+  .dropdown-medium,
   .productarea-dropdown-compact {
     padding: 5px 8px;
     min-height: 30px;
     font-size: 11px;
+  }
+  
+  .dropdown-small {
+    padding: 4px 6px;
+    min-height: 28px;
+    font-size: 10px;
+  }
+  
+  .dropdown-large {
+    padding: 6px 10px;
+    min-height: 32px;
+    font-size: 12px;
   }
   
   .selected-compact {
@@ -675,11 +743,14 @@ html {
     margin-left: 6px;
   }
   
-  .dropdown-options-compact {
-    max-height: 150px;
+  .dropdown-options-compact,
+  .dropdown-options-scrollable {
+    max-height: 120px;
   }
   
-  .dropdown-options-compact li {
+  .dropdown-options-compact li,
+  .dropdown-options-scrollable li,
+  .dropdown-options-no-scroll li {
     padding: 8px 10px;
     font-size: 10px;
   }
@@ -708,8 +779,7 @@ html {
     position: static;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
     padding: 10px;
     min-height: auto;
@@ -719,7 +789,7 @@ html {
     position: static;
   }
   
-  .screen-title-compact {
+  .screen-title {
     font-size: 18px;
   }
   
@@ -744,7 +814,7 @@ html {
     font-size: 8px;
   }
   
-  .button-compact {
+  .button {
     padding: 5px 10px;
     font-size: 10px;
     min-height: 28px;
@@ -756,14 +826,28 @@ html {
     min-height: 28px;
   }
   
-  .input-label-compact {
+  .label {
     font-size: 10px;
   }
   
+  .dropdown,
+  .dropdown-medium,
   .productarea-dropdown-compact {
     padding: 4px 6px;
     min-height: 28px;
     font-size: 10px;
+  }
+  
+  .dropdown-small {
+    padding: 3px 5px;
+    min-height: 26px;
+    font-size: 9px;
+  }
+  
+  .dropdown-large {
+    padding: 5px 8px;
+    min-height: 30px;
+    font-size: 11px;
   }
   
   .selected-compact {
@@ -775,7 +859,14 @@ html {
     margin-left: 4px;
   }
   
-  .dropdown-options-compact li {
+  .dropdown-options-compact,
+  .dropdown-options-scrollable {
+    max-height: 100px;
+  }
+  
+  .dropdown-options-compact li,
+  .dropdown-options-scrollable li,
+  .dropdown-options-no-scroll li {
     padding: 6px 8px;
     font-size: 9px;
   }
@@ -800,8 +891,7 @@ html {
     position: static;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
     padding: 8px;
     min-height: auto;
@@ -814,20 +904,20 @@ html {
     position: static;
   }
   
-  .screen-title-compact {
+  .screen-title {
     font-size: 16px;
     order: 2;
     width: 100%;
     text-align: center;
   }
   
-  .button-compact {
+  .button {
     font-size: 9px;
     padding: 4px 8px;
     min-height: 26px;
   }
   
-  .screen-form-row-compact {
+  .screen-form-row {
     flex-wrap: wrap;
     gap: 4px;
     margin-bottom: 6px;
@@ -882,17 +972,41 @@ html {
     min-height: 26px;
   }
   
-  .input-label-compact {
+  .label {
     font-size: 9px;
   }
   
+  .dropdown,
+  .dropdown-medium,
   .productarea-dropdown-compact {
     font-size: 9px;
     min-height: 26px;
   }
   
+  .dropdown-small {
+    font-size: 8px;
+    min-height: 24px;
+  }
+  
+  .dropdown-large {
+    font-size: 10px;
+    min-height: 28px;
+  }
+  
   .selected-compact {
     font-size: 9px;
+  }
+  
+  .dropdown-options-compact,
+  .dropdown-options-scrollable {
+    max-height: 80px;
+  }
+  
+  .dropdown-options-compact li,
+  .dropdown-options-scrollable li,
+  .dropdown-options-no-scroll li {
+    padding: 4px 6px;
+    font-size: 8px;
   }
   
   .part-id-inputs .input-field-compact {
@@ -915,8 +1029,7 @@ html {
     position: static;
   }
   
-  .screen-container,
-  .screen-container-compact {
+  .screen-container {
     margin: 0;
     padding: 6px;
     min-height: auto;
@@ -926,28 +1039,52 @@ html {
     position: static;
   }
   
-  .screen-title-compact {
+  .screen-title {
     font-size: 14px;
   }
   
-  .button-compact {
+  .button {
     font-size: 8px;
     padding: 3px 6px;
     min-height: 24px;
   }
   
   .input-field-compact,
+  .dropdown,
+  .dropdown-medium,
   .productarea-dropdown-compact {
     font-size: 8px;
     min-height: 24px;
   }
   
-  .input-label-compact {
+  .dropdown-small {
+    font-size: 7px;
+    min-height: 22px;
+  }
+  
+  .dropdown-large {
+    font-size: 9px;
+    min-height: 26px;
+  }
+  
+  .label {
     font-size: 8px;
   }
   
   .message-text-compact {
     font-size: 6px;
+  }
+  
+  .dropdown-options-compact,
+  .dropdown-options-scrollable {
+    max-height: 60px;
+  }
+  
+  .dropdown-options-compact li,
+  .dropdown-options-scrollable li,
+  .dropdown-options-no-scroll li {
+    padding: 3px 4px;
+    font-size: 7px;
   }
   
   .part-id-inputs .input-field-compact {
